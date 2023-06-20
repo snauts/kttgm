@@ -11,6 +11,7 @@
 .word irq
 
 .segment "TILES"
+.incbin "kttgm.chr"
 
 .segment "ZEROPAGE"
 
