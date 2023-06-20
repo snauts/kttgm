@@ -22,6 +22,12 @@
 
 .segment "CODE"
 
+PPUCTRL		= $2000
+PPUMASK		= $2001
+PPUSTATUS	= $2002
+DMC_FREQ	= $4010
+JOY2		= $4017
+
 nmi:
 	rti
 
@@ -29,14 +35,24 @@ irq:
 	rti
 
 rst:
-	sei        		; ignore IRQs
-	cld        		; disable decimal mode
+	sei
+	cld
 	ldx	#$40
-	stx	$4017		; disable APU frame IRQ
+	stx	JOY2
 	ldx	#$ff
-	txs			; Set up stack
-	inx			; now X = 0
-	stx	$2000		; disable NMI
-	stx	$2001		; disable rendering
-	stx	$4010		; disable DMC IRQs
+	txs
+	inx
+	stx	PPUCTRL
+	stx	PPUMASK
+	stx	DMC_FREQ
+
+	;; Wait for PPU to stabilize
+	bit	PPUSTATUS
+@vblank_wait_1:
+	bit	PPUSTATUS
+	bpl	@vblank_wait_1
+@vblank_wait_2:
+	bit	PPUSTATUS
+	bpl	@vblank_wait_2
+
 	rti
