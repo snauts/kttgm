@@ -29,4 +29,7 @@ irq:
 	rti
 
 rst:
+	ldx	#$FF
+	txs			; init stack
+	cld			; disable decimal mode
 	rti
