@@ -39,23 +39,21 @@ palette:
 ROOSTER_X = $40
 ROOSTER_Y = $80
 
-rooster:
+sprites:
 .byte ROOSTER_Y + $10, $C0, $05, ROOSTER_X + $08
 .byte ROOSTER_Y + $10, $C1, $05, ROOSTER_X + $10
 .byte ROOSTER_Y + $00, $D4, $05, ROOSTER_X + $10
 .byte ROOSTER_Y + $08, $E4, $05, ROOSTER_X + $10
-
 .byte ROOSTER_Y + $08, $E3, $05, ROOSTER_X + $08
 .byte ROOSTER_Y + $10, $F1, $04, ROOSTER_X + $08
 .byte ROOSTER_Y + $10, $F2, $04, ROOSTER_X + $10
 .byte ROOSTER_Y + $08, $E2, $04, ROOSTER_X + $10
-
 .byte ROOSTER_Y + $08, $E1, $04, ROOSTER_X + $08
 .byte ROOSTER_Y + $08, $E0, $04, ROOSTER_X + $00
 .byte ROOSTER_Y + $00, $D0, $04, ROOSTER_X + $00
 .byte ROOSTER_Y + $00, $D1, $04, ROOSTER_X + $08
-
 .byte ROOSTER_Y + $00, $D2, $04, ROOSTER_X + $10
+sprites_end:
 
 .segment "CODE"
 
@@ -143,7 +141,7 @@ rst:
 	lda	#$24
 	jsr	fill_rayleigh
 	jsr	setup_pallete
-	jsr	show_cock
+	jsr	init_sprites
 
 	jsr	wait_vblank
 	lda	#%10000000
@@ -213,16 +211,16 @@ setup_pallete:
 	bcc	:-
 	rts
 
-show_cock:
+init_sprites:
 	lda	#$00
 	sta	OAMADDR
 
 	ldx	#0
 :
-	lda	rooster, x
+	lda	sprites, x
 	sta	OAMDATA
 	inx
-	cpx	#68
+	cpx	sprites_end - sprites
 	bcc	:-
 	rts
 
