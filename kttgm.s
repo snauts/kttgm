@@ -111,11 +111,11 @@ loop:
 
 fill_rayleigh:
 	sta	PPUADDR
-	ldx	#$20
+	ldx	#$0
 	stx	PPUADDR
 
 	;; nametable
-	ldy	#1
+	ldy	#0
 :
 	ldx	#0
 :
