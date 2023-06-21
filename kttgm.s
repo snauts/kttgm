@@ -28,8 +28,8 @@ palette:
 .byte $0F, $0F, $0F, $0F
 .byte $0F, $0F, $0F, $0F
 
-.byte $0F, $0F, $0F, $0F
-.byte $0F, $0F, $0F, $0F
+.byte $0F, $06, $16, $30
+.byte $0F, $18, $28, $10
 .byte $0F, $0F, $0F, $0F
 .byte $0F, $0F, $0F, $0F
 
