@@ -36,9 +36,9 @@
 (defun lookup-color (color palette)
   (position color palette :test #'equal))
 
-(defun color-to-index (sprite palette)
+(defun color-to-index (sprite n palette)
   (when (> (length palette) 4)
-    (format t "ERROR: SPRITE(~A) has to many colors~%" (length palette))
+    (format t "ERROR: SPRITE(~A) has to many colors~%" n)
     (quit :unix-status 1))
   (dotimes (j 8)
     (dotimes (i 8)
@@ -72,7 +72,7 @@
 	       (color (aref picture x y)))
 	  (setf (aref sprite i j) color)
 	  (push color palette))))
-    (serialize-sprite (color-to-index sprite (clean-up-colors palette)))))
+    (serialize-sprite (color-to-index sprite n (clean-up-colors palette)))))
 
 (defun sprite-count (picture)
   (destructuring-bind (w h) (array-dimensions picture)
