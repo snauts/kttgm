@@ -96,7 +96,6 @@ nmi:
 	sta	PPUSCROLL
 	lda	scroll_y
 	sta	PPUSCROLL
-	inc	scroll_x
 
 	lda	#%00011110
 	sta	PPUMASK
@@ -154,11 +153,15 @@ loop:
 
 	sta	nmi_taken
 
+	;; update every 1 frame
+	inc	scroll_x
+
 	lda	counter
 	and	#$03
 	cmp	#$00
 	bne	loop
 
+	;; update every 4 frames
 	lda	rooster_frame
 	adc	#$01
 	and	#$0F
