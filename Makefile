@@ -6,4 +6,4 @@ all:
 	fceux kttgm.nes
 
 clean:
-	rm -f kttgm.o kttgm.nes kttgm.ppm kttgm.chr
+	rm -f kttgm.o kttgm.nes kttgm.ppm kttgm.chr kttgm.fasl

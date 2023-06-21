@@ -14,22 +14,63 @@
 .incbin "kttgm.chr"
 
 .segment "ZEROPAGE"
+scroll_x:	.res 1
+scroll_y:	.res 1
 
 .segment "BSS"
 
 .segment "OAM"
 
 .segment "RODATA"
+palette:
+.byte $0F, $12, $22, $27	; blue/orage rayleigh
+.byte $0F, $0F, $0F, $0F
+.byte $0F, $0F, $0F, $0F
+.byte $0F, $0F, $0F, $0F
+
+.byte $0F, $0F, $0F, $0F
+.byte $0F, $0F, $0F, $0F
+.byte $0F, $0F, $0F, $0F
+.byte $0F, $0F, $0F, $0F
 
 .segment "CODE"
 
 PPUCTRL		= $2000
 PPUMASK		= $2001
 PPUSTATUS	= $2002
+OAMADDR		= $2003
+OAMDATA		= $2004
+PPUSCROLL	= $2005
+PPUADDR		= $2006
+PPUDATA		= $2007
 DMC_FREQ	= $4010
+OAMDMA		= $4014
 JOY2		= $4017
 
 nmi:
+	pha
+	txa
+	pha
+	tya
+	pha
+
+	lda	#%00000000
+	sta	PPUMASK
+
+	lda	scroll_x
+	sta	PPUSCROLL
+	lda	scroll_y
+	sta	PPUSCROLL
+	inc	scroll_x
+
+	lda	#%00011110
+	sta	PPUMASK
+
+	pla
+	tay
+	pla
+	tax
+	pla
 	rti
 
 irq:
@@ -48,12 +89,61 @@ rst:
 	stx	DMC_FREQ
 
 	;; Wait for PPU to stabilize
-	bit	PPUSTATUS
-@vblank_wait_1:
-	bit	PPUSTATUS
-	bpl	@vblank_wait_1
-@vblank_wait_2:
-	bit	PPUSTATUS
-	bpl	@vblank_wait_2
+	jsr	wait_vblank
+	jsr	wait_vblank
 
-	rti
+	lda	#$00
+	sta	scroll_x
+	sta	scroll_y
+
+	lda	#$20
+	jsr	fill_rayleigh
+	lda	#$24
+	jsr	fill_rayleigh
+	jsr	setup_pallete
+
+	jsr	wait_vblank
+	lda	#%10000000
+	sta	PPUCTRL
+
+loop:
+	jmp	loop
+
+fill_rayleigh:
+	sta	PPUADDR
+	ldx	#$20
+	stx	PPUADDR
+
+	ldy	#1
+:
+	ldx	#0
+:
+	sty	PPUDATA
+	inx
+	cpx	#32
+	bcc	:-
+
+	iny
+	cpy	#30
+	bcc	:--
+	rts
+
+setup_pallete:
+	lda	#$3F
+	sta	PPUADDR
+	lda	#$00
+	sta	PPUADDR
+
+	ldx	#0
+:
+	lda	palette, x
+	sta	PPUDATA
+	inx
+	cpx	#32
+	bcc	:-
+	rts
+
+wait_vblank:
+	bit	PPUSTATUS
+	bpl	wait_vblank
+	rts
