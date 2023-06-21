@@ -37,9 +37,9 @@ ROOSTER_X = $40
 ROOSTER_Y = $80
 
 rooster:
-.byte ROOSTER_Y + $00, $D4, $05, ROOSTER_X + $10
 .byte ROOSTER_Y + $10, $F3, $05, ROOSTER_X + $08
 .byte ROOSTER_Y + $10, $F4, $05, ROOSTER_X + $10
+.byte ROOSTER_Y + $00, $D4, $05, ROOSTER_X + $10
 .byte ROOSTER_Y + $08, $E4, $05, ROOSTER_X + $10
 
 .byte ROOSTER_Y + $08, $E3, $05, ROOSTER_X + $08
