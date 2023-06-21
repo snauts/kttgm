@@ -114,6 +114,7 @@ fill_rayleigh:
 	ldx	#$20
 	stx	PPUADDR
 
+	;; nametable
 	ldy	#1
 :
 	ldx	#0
@@ -126,6 +127,15 @@ fill_rayleigh:
 	iny
 	cpy	#30
 	bcc	:--
+
+	;; attributes
+	ldx	#0
+	ldy	#0
+:
+	sty	PPUDATA
+	inx
+	cpx	#64
+	bcc	:-
 	rts
 
 setup_pallete:
