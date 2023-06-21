@@ -29,9 +29,27 @@ palette:
 .byte $0F, $0F, $0F, $0F
 
 .byte $0F, $06, $16, $30
-.byte $0F, $18, $28, $10
+.byte $0F, $28, $37, $10
 .byte $0F, $0F, $0F, $0F
 .byte $0F, $0F, $0F, $0F
+
+rooster:
+.byte $30, $D4, $05, $48
+.byte $40, $F3, $05, $40
+.byte $40, $F4, $05, $48
+.byte $38, $E4, $05, $48
+
+.byte $38, $E3, $05, $40
+.byte $40, $F1, $04, $40
+.byte $40, $F2, $04, $48
+.byte $38, $E2, $04, $48
+
+.byte $38, $E1, $04, $40
+.byte $38, $E0, $04, $38
+.byte $30, $D0, $04, $38
+.byte $30, $D1, $04, $40
+
+.byte $30, $D2, $04, $48
 
 .segment "CODE"
 
@@ -101,6 +119,7 @@ rst:
 	lda	#$24
 	jsr	fill_rayleigh
 	jsr	setup_pallete
+	jsr	show_cock
 
 	jsr	wait_vblank
 	lda	#%10000000
@@ -150,6 +169,19 @@ setup_pallete:
 	sta	PPUDATA
 	inx
 	cpx	#32
+	bcc	:-
+	rts
+
+show_cock:
+	lda	#$00
+	sta	OAMADDR
+
+	ldx	#0
+:
+	lda	rooster, x
+	sta	OAMDATA
+	inx
+	cpx	#68
 	bcc	:-
 	rts
 
