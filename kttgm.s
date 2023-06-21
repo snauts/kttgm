@@ -26,7 +26,7 @@ rooster_frame:	.res 1
 
 .segment "RODATA"
 palette:
-.byte $0F, $12, $22, $27	; blue/orage rayleigh
+.byte $0F, $03, $13, $23
 .byte $0F, $0F, $0F, $0F
 .byte $0F, $0F, $0F, $0F
 .byte $0F, $0F, $0F, $0F
