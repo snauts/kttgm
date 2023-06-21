@@ -16,6 +16,7 @@
 .segment "ZEROPAGE"
 scroll_x:	.res 1
 scroll_y:	.res 1
+rooster_frame:	.res 1
 
 .segment "BSS"
 
@@ -78,6 +79,24 @@ nmi:
 	lda	#%00000000
 	sta	PPUMASK
 
+	ldx	rooster_frame
+
+	lda	#$01
+	sta	OAMADDR
+	stx	OAMDATA
+	inx
+
+	lda	#$05
+	sta	OAMADDR
+	stx	OAMDATA
+	inx
+
+	cpx	#$FB
+	bne	:+
+	ldx	#$F3
+:
+	stx	rooster_frame
+
 	lda	scroll_x
 	sta	PPUSCROLL
 	lda	scroll_y
@@ -116,6 +135,9 @@ rst:
 	lda	#$00
 	sta	scroll_x
 	sta	scroll_y
+
+	lda	#$F3
+	sta	rooster_frame
 
 	lda	#$20
 	jsr	fill_rayleigh
