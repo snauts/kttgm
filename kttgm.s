@@ -14,6 +14,8 @@
 .incbin "kttgm.chr"
 
 .segment "ZEROPAGE"
+counter:	.res 1
+nmi_taken:	.res 1
 scroll_x:	.res 1
 scroll_y:	.res 1
 rooster_frame:	.res 1
@@ -38,8 +40,8 @@ ROOSTER_X = $40
 ROOSTER_Y = $80
 
 rooster:
-.byte ROOSTER_Y + $10, $F3, $05, ROOSTER_X + $08
-.byte ROOSTER_Y + $10, $F4, $05, ROOSTER_X + $10
+.byte ROOSTER_Y + $10, $C0, $05, ROOSTER_X + $08
+.byte ROOSTER_Y + $10, $C1, $05, ROOSTER_X + $10
 .byte ROOSTER_Y + $00, $D4, $05, ROOSTER_X + $10
 .byte ROOSTER_Y + $08, $E4, $05, ROOSTER_X + $10
 
@@ -76,6 +78,9 @@ nmi:
 	tya
 	pha
 
+	inc	counter
+	inc	nmi_taken
+
 	lda	#%00000000
 	sta	PPUMASK
 
@@ -85,17 +90,9 @@ nmi:
 	sta	OAMADDR
 	stx	OAMDATA
 	inx
-
 	lda	#$05
 	sta	OAMADDR
 	stx	OAMDATA
-	inx
-
-	cpx	#$FB
-	bne	:+
-	ldx	#$F3
-:
-	stx	rooster_frame
 
 	lda	scroll_x
 	sta	PPUSCROLL
@@ -133,10 +130,12 @@ rst:
 	jsr	wait_vblank
 
 	lda	#$00
+	sta	counter
+	sta	nmi_taken
 	sta	scroll_x
 	sta	scroll_y
 
-	lda	#$F3
+	lda	#$C0
 	sta	rooster_frame
 
 	lda	#$20
@@ -151,6 +150,23 @@ rst:
 	sta	PPUCTRL
 
 loop:
+	lda	#$00
+	cmp	nmi_taken
+	beq	loop
+
+	sta	nmi_taken
+
+	lda	counter
+	and	#$03
+	cmp	#$00
+	bne	loop
+
+	lda	rooster_frame
+	adc	#$01
+	and	#$0F
+	ora	#$C0
+	sta	rooster_frame
+
 	jmp	loop
 
 fill_rayleigh:
