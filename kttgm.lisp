@@ -18,10 +18,20 @@
   (make-array (list 8 8)))
 
 (defun color-intensity (color)
-  (reduce #'+ color))
+  (reduce #'max color))
+
+(defun get-color-index (color)
+  (floor (color-intensity color) 64))
+
+(defun index-to-color (index)
+  (list (* 64 index) (* 64 index) (* 64 index)))
 
 (defun clean-up-colors (palette)
-  (sort (remove-duplicates palette :test #'equal) #'< :key #'color-intensity))
+  (let ((clean (remove-duplicates palette :test #'equal)))
+    (loop for i from 0 to 3 while (< (length clean) 4) do
+      (unless (member i (mapcar #'get-color-index clean))
+	(push (index-to-color i) clean)))
+    (sort clean #'< :key #'color-intensity)))
 
 (defun lookup-color (color palette)
   (position color palette :test #'equal))
