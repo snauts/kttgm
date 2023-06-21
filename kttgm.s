@@ -33,23 +33,26 @@ palette:
 .byte $0F, $0F, $0F, $0F
 .byte $0F, $0F, $0F, $0F
 
+ROOSTER_X = $40
+ROOSTER_Y = $80
+
 rooster:
-.byte $30, $D4, $05, $48
-.byte $40, $F3, $05, $40
-.byte $40, $F4, $05, $48
-.byte $38, $E4, $05, $48
+.byte ROOSTER_Y + $00, $D4, $05, ROOSTER_X + $10
+.byte ROOSTER_Y + $10, $F3, $05, ROOSTER_X + $08
+.byte ROOSTER_Y + $10, $F4, $05, ROOSTER_X + $10
+.byte ROOSTER_Y + $08, $E4, $05, ROOSTER_X + $10
 
-.byte $38, $E3, $05, $40
-.byte $40, $F1, $04, $40
-.byte $40, $F2, $04, $48
-.byte $38, $E2, $04, $48
+.byte ROOSTER_Y + $08, $E3, $05, ROOSTER_X + $08
+.byte ROOSTER_Y + $10, $F1, $04, ROOSTER_X + $08
+.byte ROOSTER_Y + $10, $F2, $04, ROOSTER_X + $10
+.byte ROOSTER_Y + $08, $E2, $04, ROOSTER_X + $10
 
-.byte $38, $E1, $04, $40
-.byte $38, $E0, $04, $38
-.byte $30, $D0, $04, $38
-.byte $30, $D1, $04, $40
+.byte ROOSTER_Y + $08, $E1, $04, ROOSTER_X + $08
+.byte ROOSTER_Y + $08, $E0, $04, ROOSTER_X + $00
+.byte ROOSTER_Y + $00, $D0, $04, ROOSTER_X + $00
+.byte ROOSTER_Y + $00, $D1, $04, ROOSTER_X + $08
 
-.byte $30, $D2, $04, $48
+.byte ROOSTER_Y + $00, $D2, $04, ROOSTER_X + $10
 
 .segment "CODE"
 
