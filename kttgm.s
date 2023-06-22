@@ -17,6 +17,8 @@
 counter:	.res 1
 nmi_taken:	.res 1
 scroll_x:	.res 1
+rooster_x:	.res 1
+rooster_y:	.res 1
 rooster_frame:	.res 1
 
 .segment "BSS"
@@ -36,23 +38,21 @@ palette:
 .byte $0F, $0F, $0F, $0F
 .byte $0F, $0F, $0F, $0F
 
-ROOSTER_X = $40
-ROOSTER_Y = $80
-
 sprites:
-.byte ROOSTER_Y + $10, $C0, $05, ROOSTER_X + $08
-.byte ROOSTER_Y + $10, $C1, $05, ROOSTER_X + $10
-.byte ROOSTER_Y + $00, $D4, $05, ROOSTER_X + $10
-.byte ROOSTER_Y + $08, $E4, $05, ROOSTER_X + $10
-.byte ROOSTER_Y + $08, $E3, $05, ROOSTER_X + $08
-.byte ROOSTER_Y + $10, $F1, $04, ROOSTER_X + $08
-.byte ROOSTER_Y + $10, $F2, $04, ROOSTER_X + $10
-.byte ROOSTER_Y + $08, $E2, $04, ROOSTER_X + $10
-.byte ROOSTER_Y + $08, $E1, $04, ROOSTER_X + $08
-.byte ROOSTER_Y + $08, $E0, $04, ROOSTER_X + $00
-.byte ROOSTER_Y + $00, $D0, $04, ROOSTER_X + $00
-.byte ROOSTER_Y + $00, $D1, $04, ROOSTER_X + $08
-.byte ROOSTER_Y + $00, $D2, $04, ROOSTER_X + $10
+.byte $10, $C0, $05, $08
+.byte $10, $C1, $05, $10
+.byte $00, $D4, $05, $10
+.byte $08, $E4, $05, $10
+.byte $08, $E3, $05, $08
+.byte $10, $F1, $04, $08
+.byte $10, $F2, $04, $10
+.byte $08, $E2, $04, $10
+.byte $08, $E1, $04, $08
+.byte $08, $E0, $04, $00
+.byte $00, $D0, $04, $00
+.byte $00, $D1, $04, $08
+.byte $00, $D2, $04, $10
+rooster_end:
 sprites_end:
 
 .segment "CODE"
@@ -68,6 +68,9 @@ PPUDATA		= $2007
 DMC_FREQ	= $4010
 OAMDMA		= $4014
 JOY2		= $4017
+
+OAM_Y		= $00
+OAM_X		= $03
 
 nmi:
 	pha
@@ -119,13 +122,7 @@ rst:
 	jsr	wait_vblank
 	jsr	wait_vblank
 
-	lda	#$00
-	sta	counter
-	sta	nmi_taken
-	sta	scroll_x
-
-	lda	#$C0
-	sta	rooster_frame
+	jsr	init_variables
 
 	lda	#$20
 	jsr	fill_rayleigh
@@ -150,10 +147,13 @@ loop:
 	lda	counter
 	and	#$03
 	cmp	#$00
-	bne	loop
+	bne	finally
 
 	;; update every 4 frames
 	jsr	animate_rooster_legs
+
+finally:
+	jsr	move_rooster_sprites
 
 	jmp	loop
 
@@ -227,4 +227,39 @@ animate_rooster_legs:
 wait_vblank:
 	bit	PPUSTATUS
 	bpl	wait_vblank
+	rts
+
+init_variables:
+	lda	#$00
+	sta	counter
+	sta	nmi_taken
+	sta	scroll_x
+
+	lda	#$40
+	sta	rooster_x
+
+	lda	#$80
+	sta	rooster_y
+
+	lda	#$C0
+	sta	rooster_frame
+	rts
+
+move_rooster_sprites:
+	clc
+	lda	#0
+:
+	tax
+	lda	sprites + OAM_X, x
+	adc	rooster_x
+	sta	oam_buffer + OAM_X, x
+
+	lda	sprites + OAM_Y, x
+	adc	rooster_y
+	sta	oam_buffer + OAM_Y, x
+
+	txa
+	adc	#$04
+	cmp	rooster_end - sprites
+	bpl	:-
 	rts
