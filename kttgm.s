@@ -142,7 +142,7 @@ done_clear_mem: ; clear will spoil stack so use jmp instead of jsr
 	sta	PPUCTRL
 
 loop:
-	jsr	latch_pad
+	jsr	check_button
 	lda	#$00
 	cmp	nmi_taken
 	beq	loop
@@ -268,16 +268,6 @@ move_rooster_sprites:
 	rts
 
 move_rooster_position:
-	lda	button_down
-	cmp	#$00
-	beq	:+
-	lda	in_the_air
-	cmp	#$00
-	bne	:+
-	lda	#$00
-	sta	velocity
-	inc	in_the_air
-:
 	lda	in_the_air
 	cmp	#$00
 	beq	:+
@@ -300,7 +290,7 @@ move_rooster_position:
 :
 	rts
 
-latch_pad:
+check_button:
 	lda	#$01
 	sta	JOY1
 	lda	#$00
@@ -308,8 +298,16 @@ latch_pad:
 
 	lda	JOY1
 	and	#%00000001
-	sta	button_down
 
+	cmp	#$00
+	beq	:+
+	lda	in_the_air
+	cmp	#$00
+	bne	:+
+	lda	#$00
+	sta	velocity
+	inc	in_the_air
+:
 	rts
 
 clear_memory:
