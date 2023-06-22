@@ -247,9 +247,9 @@ init_variables:
 	rts
 
 move_rooster_sprites:
-	clc
 	lda	#0
 :
+	clc
 	tax
 	lda	sprites + OAM_X, x
 	adc	rooster_x
