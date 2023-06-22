@@ -227,7 +227,13 @@ animate_rooster_sprites:
 	ora	#$C0
 	sta	rooster_frame
 
+	ldx	in_the_air
+	cpx	#0
+	beq	:+
+	lda	#$B0
+:
 	sta	oam_buffer + 1
+	clc
 	adc	#$01
 	sta	oam_buffer + 5
 
