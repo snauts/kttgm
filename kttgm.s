@@ -22,7 +22,7 @@ rooster_frame:	.res 1
 .segment "BSS"
 
 .segment "OAM"
-oam:		.res 256
+oam_buffer:	.res 256
 
 .segment "RODATA"
 palette:
@@ -79,23 +79,16 @@ nmi:
 	inc	counter
 	inc	nmi_taken
 
-	lda	#%00000000
-	sta	PPUMASK
+	ldx	#%00000000
+	stx	PPUMASK
 
-	ldx	rooster_frame
-
-	lda	#$01
-	sta	OAMADDR
-	stx	OAMDATA
-	inx
-	lda	#$05
-	sta	OAMADDR
-	stx	OAMDATA
+	stx	OAMADDR
+	lda	#>oam_buffer
+	sta	OAMDMA
 
 	lda	scroll_x
 	sta	PPUSCROLL
-	lda	#$00
-	sta	PPUSCROLL
+	stx	PPUSCROLL
 
 	lda	#%00011110
 	sta	PPUMASK
@@ -139,7 +132,7 @@ rst:
 	lda	#$24
 	jsr	fill_rayleigh
 	jsr	setup_pallete
-	jsr	init_sprites
+	jsr	copy_sprites_to_oam
 
 	jsr	wait_vblank
 	lda	#%10000000
@@ -149,7 +142,6 @@ loop:
 	lda	#$00
 	cmp	nmi_taken
 	beq	loop
-
 	sta	nmi_taken
 
 	;; update every 1 frame
@@ -161,11 +153,7 @@ loop:
 	bne	loop
 
 	;; update every 4 frames
-	lda	rooster_frame
-	adc	#$01
-	and	#$0F
-	ora	#$C0
-	sta	rooster_frame
+	jsr	animate_rooster_legs
 
 	jmp	loop
 
@@ -213,17 +201,27 @@ setup_pallete:
 	bcc	:-
 	rts
 
-init_sprites:
-	lda	#$00
-	sta	OAMADDR
-
+copy_sprites_to_oam:
 	ldx	#0
 :
 	lda	sprites, x
-	sta	OAMDATA
+	sta	oam_buffer, x
 	inx
 	cpx	sprites_end - sprites
 	bcc	:-
+	rts
+
+animate_rooster_legs:
+	clc
+	lda	rooster_frame
+	adc	#$02
+	and	#$0F
+	ora	#$C0
+	sta	rooster_frame
+
+	sta	oam_buffer + 1
+	adc	#$01
+	sta	oam_buffer + 5
 	rts
 
 wait_vblank:
