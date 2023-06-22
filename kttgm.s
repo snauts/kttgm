@@ -122,6 +122,8 @@ rst:
 
 	;; Wait for PPU to stabilize
 	jsr	wait_vblank
+	jmp	clear_memory
+done_clear_mem: ; clear will spoil stack so use jmp instead of jsr
 	jsr	wait_vblank
 
 	jsr	init_variables
@@ -212,7 +214,7 @@ copy_sprites_to_oam:
 	sta	oam_buffer, x
 	inx
 	cpx	sprites_end - sprites
-	bcc	:-
+	bne	:-
 	rts
 
 animate_rooster_legs:
@@ -234,12 +236,6 @@ wait_vblank:
 	rts
 
 init_variables:
-	lda	#$00
-	sta	counter
-	sta	nmi_taken
-	sta	button_down
-	sta	scroll_x
-
 	lda	#$40
 	sta	rooster_x
 
@@ -288,3 +284,29 @@ latch_pad:
 	sta	button_down
 
 	rts
+
+clear_memory:
+	lda	#0
+	ldx	#0
+:
+	sta	$0000, X
+	sta	$0100, X
+	sta	$0200, X
+	sta	$0300, X
+	sta	$0400, X
+	sta	$0500, X
+	sta	$0600, X
+	sta	$0700, X
+	inx
+	bne	:-
+
+	lda	#255
+	ldx	#0
+:
+	sta	oam_buffer, X
+	inx
+	inx
+	inx
+	inx
+	bne	:-
+	jmp	done_clear_mem
