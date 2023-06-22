@@ -298,9 +298,12 @@ check_button:
 
 	lda	JOY1
 	and	#%00000001
-
-	cmp	#$00
-	beq	:+
+	ldx	button_down
+	sta	button_down
+	cpx	#$00
+	bne	:+
+	cmp	#$01
+	bne	:+
 	lda	in_the_air
 	cmp	#$00
 	bne	:+
