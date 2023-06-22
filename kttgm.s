@@ -15,7 +15,6 @@
 
 .segment "ZEROPAGE"
 counter:	.res 1
-nmi_taken:	.res 1
 scroll_x:	.res 1
 rooster_x:	.res 1
 rooster_y:	.res 1
@@ -84,7 +83,6 @@ nmi:
 	pha
 
 	inc	counter
-	inc	nmi_taken
 
 	ldx	#%00000000
 	stx	PPUMASK
@@ -142,11 +140,11 @@ done_clear_mem: ; clear will spoil stack so use jmp instead of jsr
 	sta	PPUCTRL
 
 loop:
+	lda	counter
+spin:	cmp	counter
+	beq 	spin
+
 	jsr	check_button
-	lda	#$00
-	cmp	nmi_taken
-	beq	loop
-	sta	nmi_taken
 
 	;; update every 1 frame
 	inc	scroll_x
