@@ -17,12 +17,12 @@
 counter:	.res 1
 nmi_taken:	.res 1
 scroll_x:	.res 1
-scroll_y:	.res 1
 rooster_frame:	.res 1
 
 .segment "BSS"
 
 .segment "OAM"
+oam:		.res 256
 
 .segment "RODATA"
 palette:
@@ -94,7 +94,7 @@ nmi:
 
 	lda	scroll_x
 	sta	PPUSCROLL
-	lda	scroll_y
+	lda	#$00
 	sta	PPUSCROLL
 
 	lda	#%00011110
@@ -130,7 +130,6 @@ rst:
 	sta	counter
 	sta	nmi_taken
 	sta	scroll_x
-	sta	scroll_y
 
 	lda	#$C0
 	sta	rooster_frame
