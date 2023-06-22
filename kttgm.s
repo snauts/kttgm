@@ -158,7 +158,7 @@ loop:
 	bne	finally
 
 	;; update every 4 frames
-	jsr	animate_rooster_legs
+	jsr	animate_rooster_sprites
 
 finally:
 	jsr	move_rooster_sprites
@@ -219,7 +219,7 @@ copy_sprites_to_oam:
 	bne	:-
 	rts
 
-animate_rooster_legs:
+animate_rooster_sprites:
 	clc
 	lda	rooster_frame
 	adc	#$02
@@ -230,6 +230,11 @@ animate_rooster_legs:
 	sta	oam_buffer + 1
 	adc	#$01
 	sta	oam_buffer + 5
+
+	sec
+	lda	#$D4
+	sbc	in_the_air
+	sta	oam_buffer + 9
 	rts
 
 wait_vblank:
