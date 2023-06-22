@@ -274,7 +274,7 @@ move_rooster_position:
 	lda	in_the_air
 	cmp	#$00
 	bne	:+
-	lda	#$F8
+	lda	#$00
 	sta	velocity
 	inc	in_the_air
 :
@@ -282,9 +282,13 @@ move_rooster_position:
 	cmp	#$00
 	beq	:+
 
-	clc
 	lda	velocity
 	inc	velocity
+	lsr	a
+	lsr	a
+	clc
+	adc	#252 		; this controls jumping height
+	clc
 	adc	rooster_y
 	sta	rooster_y
 
