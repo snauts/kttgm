@@ -21,6 +21,8 @@ rooster_x:	.res 1
 rooster_y:	.res 1
 rooster_frame:	.res 1
 button_down:	.res 1
+velocity:	.res 1
+in_the_air:	.res 1
 
 .segment "BSS"
 
@@ -269,7 +271,28 @@ move_rooster_position:
 	lda	button_down
 	cmp	#$00
 	beq	:+
-	inc	rooster_x
+	lda	in_the_air
+	cmp	#$00
+	bne	:+
+	lda	#$F8
+	sta	velocity
+	inc	in_the_air
+:
+	lda	in_the_air
+	cmp	#$00
+	beq	:+
+
+	clc
+	lda	velocity
+	inc	velocity
+	adc	rooster_y
+	sta	rooster_y
+
+	;; landing
+	cmp	#$80
+	bmi	:+
+	lda	#$00
+	sta	in_the_air
 :
 	rts
 
