@@ -20,6 +20,7 @@ scroll_x:	.res 1
 rooster_x:	.res 1
 rooster_y:	.res 1
 rooster_frame:	.res 1
+button_down:	.res 1
 
 .segment "BSS"
 
@@ -67,6 +68,7 @@ PPUADDR		= $2006
 PPUDATA		= $2007
 DMC_FREQ	= $4010
 OAMDMA		= $4014
+JOY1		= $4016
 JOY2		= $4017
 
 OAM_Y		= $00
@@ -136,6 +138,7 @@ rst:
 	sta	PPUCTRL
 
 loop:
+	jsr	latch_pad
 	lda	#$00
 	cmp	nmi_taken
 	beq	loop
@@ -143,6 +146,7 @@ loop:
 
 	;; update every 1 frame
 	inc	scroll_x
+	jsr	move_rooster_position
 
 	lda	counter
 	and	#$03
@@ -233,6 +237,7 @@ init_variables:
 	lda	#$00
 	sta	counter
 	sta	nmi_taken
+	sta	button_down
 	sta	scroll_x
 
 	lda	#$40
@@ -262,4 +267,24 @@ move_rooster_sprites:
 	adc	#$04
 	cmp	rooster_end - sprites
 	bpl	:-
+	rts
+
+move_rooster_position:
+	lda	button_down
+	cmp	#$00
+	beq	:+
+	inc	rooster_x
+:
+	rts
+
+latch_pad:
+	lda	#$01
+	sta	JOY1
+	lda	#$00
+	sta	JOY1
+
+	lda	JOY1
+	and	#%00000001
+	sta	button_down
+
 	rts
