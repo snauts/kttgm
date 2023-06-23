@@ -16,6 +16,7 @@
 .segment "ZEROPAGE"
 counter:	.res 1
 scroll_x:	.res 1
+scroll_c:	.res 1
 rooster_x:	.res 1
 rooster_y:	.res 1
 rooster_frame:	.res 1
@@ -94,6 +95,10 @@ nmi:
 	lda	scroll_x
 	sta	PPUSCROLL
 	stx	PPUSCROLL
+
+	lda	scroll_c
+	ora	#%10000000
+	sta	PPUCTRL
 
 	lda	#%00011110
 	sta	PPUMASK
