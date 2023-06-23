@@ -372,6 +372,7 @@ clear_memory:
 	jmp	done_clear_mem
 
 fill_line_of_grass:
+	sta	tmp_arg
 	ldx	#0
 :
 	txa
@@ -392,11 +393,9 @@ fill_grass:
 	sta	PPUADDR
 
 	lda	#$20
-	sta	tmp_arg
 	jsr	fill_line_of_grass
 
 	lda	#$30
-	sta	tmp_arg
 	jsr	fill_line_of_grass
 
 	pla
