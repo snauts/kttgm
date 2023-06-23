@@ -97,6 +97,7 @@ nmi:
 	stx	PPUSCROLL
 
 	lda	scroll_c
+	and	#%00000001
 	ora	#%10000000
 	sta	PPUCTRL
 
@@ -152,7 +153,7 @@ spin:	cmp	counter
 	jsr	check_button
 
 	;; update every 1 frame
-	inc	scroll_x
+	jsr	scroll_screen
 	jsr	move_rooster_position
 
 	lda	counter
@@ -325,6 +326,16 @@ check_button:
 	sta	velocity
 	inc	in_the_air
 :
+	rts
+
+scroll_screen:
+	clc
+	lda	#1
+	adc	scroll_x
+	sta	scroll_x
+	lda	#0
+	adc	scroll_c
+	sta	scroll_c
 	rts
 
 clear_memory:
