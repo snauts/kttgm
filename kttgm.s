@@ -14,6 +14,7 @@
 .incbin "kttgm.chr"
 
 .segment "ZEROPAGE"
+tmp_arg:	.res 1
 counter:	.res 1
 scroll_x:	.res 1
 scroll_c:	.res 1
@@ -59,6 +60,8 @@ rooster_end:
 sprites_end:
 
 .segment "CODE"
+
+ROOSTER_Y	= 124
 
 PPUCTRL		= $2000
 PPUMASK		= $2001
@@ -135,9 +138,10 @@ done_clear_mem: ; clear will spoil stack so use jmp instead of jsr
 	jsr	init_variables
 
 	lda	#$20
-	jsr	fill_rayleigh
+	jsr	fill_background
 	lda	#$24
-	jsr	fill_rayleigh
+	jsr	fill_background
+
 	jsr	setup_pallete
 	jsr	copy_sprites_to_oam
 
@@ -169,7 +173,8 @@ finally:
 
 	jmp	loop
 
-fill_rayleigh:
+fill_background:
+	pha
 	sta	PPUADDR
 	ldx	#$0
 	stx	PPUADDR
@@ -196,7 +201,9 @@ fill_rayleigh:
 	inx
 	cpx	#64
 	bcc	:-
-	rts
+
+	pla
+	jmp	fill_grass 	; tail
 
 setup_pallete:
 	lda	#$3F
@@ -256,7 +263,7 @@ init_variables:
 	lda	#$40
 	sta	rooster_x
 
-	lda	#$80
+	lda	#ROOSTER_Y
 	sta	rooster_y
 
 	lda	#$C0
@@ -298,7 +305,7 @@ move_rooster_position:
 	sta	rooster_y
 
 	;; landing
-	cmp	#$80
+	cmp	#ROOSTER_Y
 	bmi	:+
 	lda	#$00
 	sta	in_the_air
@@ -363,3 +370,47 @@ clear_memory:
 	inx
 	bne	:-
 	jmp	done_clear_mem
+
+fill_line_of_grass:
+	ldx	#0
+:
+	txa
+	and	#3
+	ora	tmp_arg
+	sta	PPUDATA
+	inx
+	cpx	#32
+	bne	:-
+	rts
+
+fill_grass:
+	pha
+	clc
+	adc	#2
+	sta	PPUADDR
+	lda	#$40
+	sta	PPUADDR
+
+	lda	#$20
+	sta	tmp_arg
+	jsr	fill_line_of_grass
+
+	lda	#$30
+	sta	tmp_arg
+	jsr	fill_line_of_grass
+
+	pla
+	clc
+	adc	#3
+	sta	PPUADDR
+	lda	#$e0
+	sta	PPUADDR
+
+	ldx	#0
+:
+	lda	#$50
+	sta	PPUDATA
+	inx
+	cpx	#8
+	bne	:-
+	rts
