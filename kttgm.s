@@ -34,7 +34,7 @@ oam_buffer:	.res 256
 palette:
 .byte $0F, $03, $13, $23
 .byte $0F, $09, $19, $29
-.byte $0F, $0F, $0F, $0F
+.byte $0F, $08, $18, $28
 .byte $0F, $0F, $0F, $0F
 
 .byte $0F, $06, $16, $30
