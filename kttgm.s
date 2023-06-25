@@ -44,9 +44,9 @@ var_data:
 
 palette:
 .byte $0F, $03, $13, $23
-.byte $0F, $09, $19, $29
-.byte $0F, $08, $18, $28
 .byte $0F, $0F, $0F, $0F
+.byte $0F, $08, $18, $28
+.byte $0F, $09, $19, $29
 
 .byte $0F, $06, $16, $30
 .byte $0F, $27, $28, $10
@@ -417,11 +417,10 @@ select_attributes:
 get_attribute:
 	cpy	column_height
 	bne	:+
-	ora	#$40
-	jmp	:++
+	ora	#(1 << 6)
 :
 	bmi	:+
-	ora	#$80
+	ora	#(2 << 6)
 :
 	iny
 	iny
