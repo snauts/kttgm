@@ -21,6 +21,9 @@ scroll_c:	.res 1
 button_down:	.res 1
 velocity:	.res 1
 in_the_air:	.res 1
+column_pos:	.res 1
+column_tile:	.res 1
+column_height:	.res 1
 
 var_start:
 rooster_x:	.res 1
@@ -106,7 +109,7 @@ nmi:
 
 	lda	scroll_c
 	and	#%00000001
-	ora	#%10000000
+	ora	#%10000100
 	sta	PPUCTRL
 
 	lda	#%00011110
@@ -141,17 +144,16 @@ done_clear_mem: ; clear will spoil stack so use jmp instead of jsr
 	jsr	wait_vblank
 
 	jsr	init_variables
-
-	lda	#$20
-	jsr	fill_background
-	lda	#$24
-	jsr	fill_background
-
 	jsr	setup_pallete
+
+	lda	#%00000100
+	sta	PPUCTRL
+
+	jsr	fill_background
 	jsr	copy_sprites_to_oam
 
 	jsr	wait_vblank
-	lda	#%10000000
+	lda	#%10000100
 	sta	PPUCTRL
 
 loop:
@@ -178,38 +180,6 @@ finally:
 
 	jmp	loop
 
-fill_background:
-	pha
-	sta	PPUADDR
-	ldx	#$0
-	stx	PPUADDR
-
-	;; nametable
-	ldy	#0
-:
-	ldx	#0
-:
-	sty	PPUDATA
-	inx
-	cpx	#32
-	bcc	:-
-
-	iny
-	cpy	#30
-	bcc	:--
-
-	;; attributes
-	ldx	#0
-	ldy	#0
-:
-	sty	PPUDATA
-	inx
-	cpx	#64
-	bcc	:-
-
-	pla
-	jmp	fill_grass 	; tail
-
 setup_pallete:
 	lda	#$3F
 	sta	PPUADDR
@@ -223,6 +193,7 @@ setup_pallete:
 	inx
 	cpx	#32
 	bcc	:-
+
 	rts
 
 copy_sprites_to_oam:
@@ -272,6 +243,7 @@ init_variables:
 	inx
 	cpx	#(var_end - var_start)
 	bne	:-
+
 	rts
 
 move_rooster_sprites:
@@ -375,45 +347,67 @@ clear_memory:
 	bne	:-
 	jmp	done_clear_mem
 
-fill_line_of_grass:
-	sta	tmp_arg
-	ldx	#0
-:
-	txa
-	and	#3
-	ora	tmp_arg
+fill_ground_cell:
 	sta	PPUDATA
+	adc	#16
 	inx
-	cpx	#32
-	bne	:-
 	rts
 
-fill_grass:
-	pha
-	clc
-	adc	#2
+fill_column:
+	lda	column_pos
+	and	#$20
+	lsr
+	lsr
+	lsr
+	ora	#$20
 	sta	PPUADDR
-	lda	#$40
-	sta	PPUADDR
-
-	lda	#$20
-	jsr	fill_line_of_grass
-
-	lda	#$30
-	jsr	fill_line_of_grass
-
-	pla
-	clc
-	adc	#3
-	sta	PPUADDR
-	lda	#$e0
+	lda	column_pos
+	and	#$1F
 	sta	PPUADDR
 
 	ldx	#0
-:
-	lda	#$50
-	sta	PPUDATA
+fill_sky:
+	stx	PPUDATA
 	inx
-	cpx	#8
+	cpx	column_height
+	bne	fill_sky
+
+fill_grass:
+	clc
+	lda	column_tile
+	jsr	fill_ground_cell
+	jsr	fill_ground_cell
+
+fill_rocks:
+	jsr	fill_ground_cell
+	cmp	#$80
+	bmi	:+
+	sbc	#$40
+:
+	cpx	#30
+	bne	fill_rocks
+
+	inc	column_pos
+	rts
+
+fill_double:
+	jsr	fill_column
+	inc	column_tile
+	jsr	fill_column
+	rts
+
+fill_background:
+	ldy	#0
+:
+	lda	#$12
+	sta	column_height
+	lda	#$20
+	sta	column_tile
+	jsr	fill_double
+	lda	#$22
+	sta	column_tile
+	jsr	fill_double
+	iny
+	cpy	#32
 	bne	:-
 	rts
