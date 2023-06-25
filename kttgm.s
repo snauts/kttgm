@@ -202,7 +202,7 @@ copy_sprites_to_oam:
 	lda	sprites, x
 	sta	oam_buffer, x
 	inx
-	cpx	sprites_end - sprites
+	cpx	#(sprites_end - sprites)
 	bne	:-
 	rts
 
@@ -247,10 +247,9 @@ init_variables:
 	rts
 
 move_rooster_sprites:
-	lda	#0
+	ldx	#0
 :
 	clc
-	tax
 	lda	sprites + OAM_X, x
 	adc	rooster_x
 	sta	oam_buffer + OAM_X, x
@@ -259,10 +258,12 @@ move_rooster_sprites:
 	adc	rooster_y
 	sta	oam_buffer + OAM_Y, x
 
-	txa
-	adc	#$04
-	cmp	rooster_end - sprites
-	bpl	:-
+	inx
+	inx
+	inx
+	inx
+	cpx	#(rooster_end - sprites)
+	bne	:-
 	rts
 
 move_rooster_position:
