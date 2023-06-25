@@ -94,3 +94,11 @@
 
 (save-sprites)
 (quit)
+
+(defun random-row (&optional (out t))
+  (format out ".byte $~2,'0X, $~2,'0X, $~2,'0X, $~2,'0X~%"
+	  (random 256) (random 256) (random 256) (random 256)))
+
+(defun random-block ()
+  (dotimes (i 8)
+    (random-row)))

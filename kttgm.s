@@ -23,6 +23,7 @@ in_the_air:	.res 1
 column_pos:	.res 1
 column_tile:	.res 1
 column_height:	.res 1
+random_index:	.res 1
 attributes:	.res 12
 ppu_data:	.res 32
 
@@ -69,6 +70,17 @@ sprites:
 .byte $00, $D2, $04, $10
 rooster_end:
 sprites_end:
+
+random_numbers: 		; random number size must be power of two
+.byte $C3, $69, $CE, $AF
+.byte $F9, $ED, $C2, $E1
+.byte $55, $FE, $DB, $C9
+.byte $A0, $F5, $B6, $10
+.byte $EC, $D1, $98, $5D
+.byte $97, $3B, $C9, $90
+.byte $0D, $0B, $F9, $D6
+.byte $4E, $7F, $BF, $86
+random_numbers_end:
 
 .segment "CODE"
 
@@ -548,6 +560,14 @@ update_ppu:
 
 	rts
 
+get_random_number:
+	inc	random_index
+	lda	random_index
+	and	#(random_numbers_end - random_numbers - 1)
+	tax
+	lda	random_numbers, X
+	rts
+
 fill_next_column:
 	lda	scroll_x
 	and	#7
@@ -556,6 +576,12 @@ fill_next_column:
 	lda	column_tile
 	cmp	#$24
 	bmi	:+
+	jsr	get_random_number
+	clc
+	and	#$07
+	asl
+	adc	#$08
+	sta	column_height
 	lda	#$20
 	sta	column_tile
 :
