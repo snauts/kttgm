@@ -168,6 +168,7 @@ spin:	cmp	counter
 	jsr	check_button
 
 	;; update every 1 frame
+	jsr	fill_next_column
 	jsr	scroll_screen
 	jsr	move_rooster_position
 
@@ -497,7 +498,7 @@ fill_background:
 	pla
 	clc
 	adc	#1
-	cmp	#16
+	cmp	#8
 	bne	:--
 	rts
 
@@ -545,4 +546,19 @@ update_ppu:
 	cpx	#8
 	bne	:-
 
+	rts
+
+fill_next_column:
+	lda	scroll_x
+	and	#7
+	cmp	#0
+	bne	:++
+	lda	column_tile
+	cmp	#$24
+	bmi	:+
+	lda	#$20
+	sta	column_tile
+:
+	jsr	update_column
+:
 	rts
