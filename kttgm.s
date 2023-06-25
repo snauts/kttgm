@@ -23,6 +23,7 @@ in_the_air:	.res 1
 column_pos:	.res 1
 column_tile:	.res 1
 column_height:	.res 1
+attributes:	.res 10
 ppu_data:	.res 32
 
 var_start:
@@ -402,16 +403,16 @@ select_nametable:
 	rts
 
 setup_attributes:
-	;; jsr	select_nametable
-	;; ora	#$23
-	;; sta	attribute_hi
+	jsr	select_nametable
+	ora	#$23
+	sta	attributes + 0
 
-	;; lda	column_pos
-	;; and	#$1C
-	;; lsr
-	;; lsr
-	;; ora	#$C0
-	;; sta	attribute_lo
+	lda	column_pos
+	and	#$1C
+	lsr
+	lsr
+	ora	#$C0
+	sta	attributes + 1
 
 	rts
 
@@ -424,16 +425,19 @@ fill_double:
 	rts
 
 fill_background:
-	ldy	#0
+	lda	#0
 :
+	pha
 	lda	#$12
 	sta	column_height
 	lda	#$20
 	jsr	fill_double
 	lda	#$22
 	jsr	fill_double
-	iny
-	cpy	#16
+	pla
+	clc
+	adc	#1
+	cmp	#16
 	bne	:-
 	rts
 
@@ -449,4 +453,19 @@ update_ppu:
 	inx
 	cpx	#30
 	bne	:-
+
+	clc
+	ldx	#0
+	lda	attributes + 1
+:
+	ldy	attributes + 0
+	sty	PPUADDR
+	sta	PPUADDR
+	adc	#8
+	ldy	attributes + 2, X
+	sty	PPUDATA
+	inx
+	cpx	#8
+	bne	:-
+
 	rts
