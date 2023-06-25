@@ -474,6 +474,12 @@ attribute_loop:
 	bne	attribute_loop
 	rts
 
+update_column:
+	jsr	setup_attributes
+	jsr	fill_column
+	inc	column_tile
+	rts
+
 fill_background:
 	lda	#$12
 	sta	column_height
@@ -483,10 +489,8 @@ fill_background:
 	lda	#$20
 	sta	column_tile
 :
-	jsr	setup_attributes
-	jsr	fill_column
+	jsr	update_column
 	jsr	update_ppu
-	inc	column_tile
 	lda	column_tile
 	cmp	#$24
 	bne	:-
