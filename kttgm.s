@@ -402,17 +402,28 @@ select_nametable:
 	lsr
 	rts
 
-setup_attributes:
+select_attributes:
 	jsr	select_nametable
 	ora	#$23
-	sta	attributes + 0
+	tax
 
 	lda	column_pos
 	and	#$1C
 	lsr
 	lsr
 	ora	#$C0
+	rts
+
+setup_attributes:
+	jsr	select_attributes
+	stx	attributes + 0
 	sta	attributes + 1
+
+	inc	column_pos
+	jsr	select_attributes
+	stx	attributes + 2
+	sta	attributes + 3
+	dec	column_pos
 
 	rts
 
