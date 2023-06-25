@@ -277,8 +277,8 @@ move_rooster_position:
 
 	lda	velocity
 	inc	velocity
-	lsr	a
-	lsr	a
+	lsr
+	lsr
 	clc
 	adc	#252 		; this controls jumping height
 	clc
@@ -414,6 +414,19 @@ select_attributes:
 	ora	#$C0
 	rts
 
+get_attribute:
+	cpy	column_height
+	bne	:+
+	ora	#$40
+	jmp	:++
+:
+	bmi	:+
+	ora	#$80
+:
+	iny
+	iny
+	rts
+
 setup_attributes:
 	jsr	select_attributes
 	stx	attributes + 0
@@ -425,6 +438,33 @@ setup_attributes:
 	sta	attributes + 3
 	dec	column_pos
 
+	ldx	#0
+	ldy	#0
+attribute_loop:
+	lda	#$00
+	jsr	get_attribute
+	lsr
+	lsr
+	lsr
+	lsr
+	jsr	get_attribute
+	pha
+	lda	column_pos
+	and	#$02
+	cmp	#$00
+	beq	:+
+	pla
+	lsr
+	lsr
+	jmp	:++
+:
+	pla
+:
+	ora	attributes + 4, x
+	sta	attributes + 4, x
+	inx
+	cpx	#8
+	bne	attribute_loop
 	rts
 
 fill_double:
