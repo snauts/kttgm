@@ -151,6 +151,7 @@ done_clear_mem: ; clear will spoil stack so use jmp instead of jsr
 
 	jsr	fill_background
 	jsr	copy_sprites_to_oam
+	jsr	move_rooster_sprites
 
 	jsr	wait_vblank
 	lda	#%10000100
