@@ -96,6 +96,8 @@ nmi:
 
 	inc	counter
 
+	jsr	update_ppu
+
 	ldx	#%00000000
 	stx	PPUMASK
 
