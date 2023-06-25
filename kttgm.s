@@ -426,6 +426,20 @@ get_attribute:
 	iny
 	rts
 
+shift_attribute:
+	pha
+	lda	column_pos
+	and	#$02
+	cmp	#$00
+	beq	:+
+	pla
+	lsr
+	lsr
+	rts
+:
+	pla
+	rts
+
 setup_attributes:
 	jsr	select_attributes
 	stx	attributes + 0
@@ -440,6 +454,12 @@ setup_attributes:
 	ldx	#0
 	ldy	#0
 attribute_loop:
+	lda	#$CC
+	jsr	shift_attribute
+	eor	#$FF
+	and	attributes + 4, x
+	sta	attributes + 4, x
+
 	lda	#$00
 	jsr	get_attribute
 	lsr
@@ -447,18 +467,7 @@ attribute_loop:
 	lsr
 	lsr
 	jsr	get_attribute
-	pha
-	lda	column_pos
-	and	#$02
-	cmp	#$00
-	beq	:+
-	pla
-	lsr
-	lsr
-	jmp	:++
-:
-	pla
-:
+	jsr	shift_attribute
 	ora	attributes + 4, x
 	sta	attributes + 4, x
 	inx
@@ -475,11 +484,11 @@ fill_double:
 	rts
 
 fill_background:
+	lda	#$12
+	sta	column_height
 	lda	#0
 :
 	pha
-	lda	#$12
-	sta	column_height
 	lda	#$20
 	jsr	fill_double
 	lda	#$22
