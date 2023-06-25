@@ -23,7 +23,7 @@ in_the_air:	.res 1
 column_pos:	.res 1
 column_tile:	.res 1
 column_height:	.res 1
-attributes:	.res 10
+attributes:	.res 12
 ppu_data:	.res 32
 
 var_start:
@@ -442,6 +442,7 @@ fill_background:
 	rts
 
 update_ppu:
+	;; update column of nametable
 	lda	ppu_data + 0
 	sta	PPUADDR
 	lda	ppu_data + 1
@@ -454,6 +455,7 @@ update_ppu:
 	cpx	#30
 	bne	:-
 
+	;; update column of attributes
 	clc
 	ldx	#0
 	lda	attributes + 1
@@ -462,8 +464,23 @@ update_ppu:
 	sty	PPUADDR
 	sta	PPUADDR
 	adc	#8
-	ldy	attributes + 2, X
+	ldy	attributes + 4, X
 	sty	PPUDATA
+	inx
+	cpx	#8
+	bne	:-
+
+	;; read next attributes
+	clc
+	ldx	#0
+	lda	attributes + 2
+:
+	ldy	attributes + 3
+	sty	PPUADDR
+	sta	PPUADDR
+	adc	#8
+	ldy	PPUDATA
+	ldy	attributes + 4, X
 	inx
 	cpx	#8
 	bne	:-
