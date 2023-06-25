@@ -18,12 +18,16 @@ tmp_arg:	.res 1
 counter:	.res 1
 scroll_x:	.res 1
 scroll_c:	.res 1
-rooster_x:	.res 1
-rooster_y:	.res 1
-rooster_frame:	.res 1
 button_down:	.res 1
 velocity:	.res 1
 in_the_air:	.res 1
+
+var_start:
+rooster_x:	.res 1
+rooster_y:	.res 1
+rooster_frame:	.res 1
+platform:	.res 1
+var_end:
 
 .segment "BSS"
 
@@ -31,6 +35,9 @@ in_the_air:	.res 1
 oam_buffer:	.res 256
 
 .segment "RODATA"
+var_data:
+.byte $40, $7C, $C0, $7C
+
 palette:
 .byte $0F, $03, $13, $23
 .byte $0F, $09, $19, $29
@@ -60,8 +67,6 @@ rooster_end:
 sprites_end:
 
 .segment "CODE"
-
-ROOSTER_Y	= 124
 
 PPUCTRL		= $2000
 PPUMASK		= $2001
@@ -260,14 +265,13 @@ wait_vblank:
 	rts
 
 init_variables:
-	lda	#$40
-	sta	rooster_x
-
-	lda	#ROOSTER_Y
-	sta	rooster_y
-
-	lda	#$C0
-	sta	rooster_frame
+	ldx	#0
+:
+	lda	var_data, x
+	sta	var_start, x
+	inx
+	cpx	#(var_end - var_start)
+	bne	:-
 	rts
 
 move_rooster_sprites:
@@ -305,7 +309,7 @@ move_rooster_position:
 	sta	rooster_y
 
 	;; landing
-	cmp	#ROOSTER_Y
+	cmp	platform
 	bmi	:+
 	lda	#$00
 	sta	in_the_air
