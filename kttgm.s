@@ -14,7 +14,6 @@
 .incbin "kttgm.chr"
 
 .segment "ZEROPAGE"
-tmp_arg:	.res 1
 counter:	.res 1
 scroll_x:	.res 1
 scroll_c:	.res 1
@@ -24,6 +23,7 @@ in_the_air:	.res 1
 column_pos:	.res 1
 column_tile:	.res 1
 column_height:	.res 1
+ppu_addr:	.res 2
 
 var_start:
 rooster_x:	.res 1
@@ -98,6 +98,8 @@ nmi:
 
 	ldx	#%00000000
 	stx	PPUMASK
+
+	jsr	update_ppu
 
 	stx	OAMADDR
 	lda	#>oam_buffer
@@ -355,11 +357,7 @@ fill_ground_cell:
 	rts
 
 fill_column:
-	lda	column_pos
-	and	#$20
-	lsr
-	lsr
-	lsr
+	jsr	select_nametable
 	ora	#$20
 	sta	PPUADDR
 	lda	column_pos
@@ -391,7 +389,20 @@ fill_rocks:
 	inc	column_pos
 	rts
 
+select_nametable:
+	lda	column_pos
+	and	#$20
+	lsr
+	lsr
+	lsr
+	rts
+
+setup_attributes:
+	rts
+
 fill_double:
+	sta	column_tile
+	jsr	setup_attributes
 	jsr	fill_column
 	inc	column_tile
 	jsr	fill_column
@@ -403,12 +414,13 @@ fill_background:
 	lda	#$12
 	sta	column_height
 	lda	#$20
-	sta	column_tile
 	jsr	fill_double
 	lda	#$22
-	sta	column_tile
 	jsr	fill_double
 	iny
-	cpy	#32
+	cpy	#16
 	bne	:-
+	rts
+
+update_ppu:
 	rts
