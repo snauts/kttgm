@@ -23,7 +23,7 @@ in_the_air:	.res 1
 column_pos:	.res 1
 column_tile:	.res 1
 column_height:	.res 1
-ppu_addr:	.res 2
+ppu_data:	.res 32
 
 var_start:
 rooster_x:	.res 1
@@ -98,8 +98,6 @@ nmi:
 
 	ldx	#%00000000
 	stx	PPUMASK
-
-	jsr	update_ppu
 
 	stx	OAMADDR
 	lda	#>oam_buffer
@@ -351,7 +349,7 @@ clear_memory:
 	jmp	done_clear_mem
 
 fill_ground_cell:
-	sta	PPUDATA
+	sta	ppu_data + 2, x
 	adc	#16
 	inx
 	rts
@@ -359,14 +357,16 @@ fill_ground_cell:
 fill_column:
 	jsr	select_nametable
 	ora	#$20
-	sta	PPUADDR
+	sta	ppu_data + 0
+
 	lda	column_pos
 	and	#$1F
-	sta	PPUADDR
+	sta	ppu_data + 1
 
 	ldx	#0
 fill_sky:
-	stx	PPUDATA
+	txa
+	sta	ppu_data + 2, x
 	inx
 	cpx	column_height
 	bne	fill_sky
@@ -386,6 +386,7 @@ fill_rocks:
 	cpx	#30
 	bne	fill_rocks
 
+	jsr	update_ppu
 	inc	column_pos
 	rts
 
@@ -398,6 +399,17 @@ select_nametable:
 	rts
 
 setup_attributes:
+	;; jsr	select_nametable
+	;; ora	#$23
+	;; sta	attribute_hi
+
+	;; lda	column_pos
+	;; and	#$1C
+	;; lsr
+	;; lsr
+	;; ora	#$C0
+	;; sta	attribute_lo
+
 	rts
 
 fill_double:
@@ -423,4 +435,15 @@ fill_background:
 	rts
 
 update_ppu:
+	lda	ppu_data + 0
+	sta	PPUADDR
+	lda	ppu_data + 1
+	sta	PPUADDR
+	ldx	#0
+:
+	lda	ppu_data + 2, X
+	sta	PPUDATA
+	inx
+	cpx	#30
+	bne	:-
 	rts
