@@ -390,7 +390,6 @@ fill_rocks:
 	cpx	#30
 	bne	fill_rocks
 
-	jsr	update_ppu
 	inc	column_pos
 	rts
 
@@ -475,14 +474,6 @@ attribute_loop:
 	bne	attribute_loop
 	rts
 
-fill_double:
-	sta	column_tile
-	jsr	setup_attributes
-	jsr	fill_column
-	inc	column_tile
-	jsr	fill_column
-	rts
-
 fill_background:
 	lda	#$12
 	sta	column_height
@@ -490,14 +481,20 @@ fill_background:
 :
 	pha
 	lda	#$20
-	jsr	fill_double
-	lda	#$22
-	jsr	fill_double
+	sta	column_tile
+:
+	jsr	setup_attributes
+	jsr	fill_column
+	jsr	update_ppu
+	inc	column_tile
+	lda	column_tile
+	cmp	#$24
+	bne	:-
 	pla
 	clc
 	adc	#1
 	cmp	#16
-	bne	:-
+	bne	:--
 	rts
 
 update_ppu:
