@@ -473,9 +473,9 @@ update_ppu:
 	;; read next attributes
 	clc
 	ldx	#0
-	lda	attributes + 2
+	lda	attributes + 3
 :
-	ldy	attributes + 3
+	ldy	attributes + 2
 	sty	PPUADDR
 	sta	PPUADDR
 	adc	#8
