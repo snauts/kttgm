@@ -14,6 +14,8 @@
 .incbin "kttgm.chr"
 
 .segment "ZEROPAGE"
+ppu_data:	.res 32
+attributes:	.res 12
 counter:	.res 1
 scroll_x:	.res 1
 scroll_c:	.res 1
@@ -23,15 +25,13 @@ in_the_air:	.res 1
 column_pos:	.res 1
 column_tile:	.res 1
 column_height:	.res 1
-random_index:	.res 1
-attributes:	.res 12
-ppu_data:	.res 32
 
 var_start:
 rooster_x:	.res 1
 rooster_y:	.res 1
 rooster_frame:	.res 1
 platform:	.res 1
+seed:		.res 1
 var_end:
 
 .segment "BSS"
@@ -42,6 +42,7 @@ oam_buffer:	.res 256
 .segment "RODATA"
 var_data:
 .byte $40, $7C, $C0, $7C
+.byte $42
 
 palette:
 .byte $0F, $03, $13, $23
@@ -70,17 +71,6 @@ sprites:
 .byte $00, $D2, $04, $10
 rooster_end:
 sprites_end:
-
-random_numbers: 		; random number size must be power of two
-.byte $C3, $69, $CE, $AF
-.byte $F9, $ED, $C2, $E1
-.byte $55, $FE, $DB, $C9
-.byte $A0, $F5, $B6, $10
-.byte $EC, $D1, $98, $5D
-.byte $97, $3B, $C9, $90
-.byte $0D, $0B, $F9, $D6
-.byte $4E, $7F, $BF, $86
-random_numbers_end:
 
 .segment "CODE"
 
@@ -561,11 +551,15 @@ update_ppu:
 	rts
 
 get_random_number:
-	inc	random_index
-	lda	random_index
-	and	#(random_numbers_end - random_numbers - 1)
-	tax
-	lda	random_numbers, X
+	lda	seed
+	beq	do_eor
+	asl
+	beq	no_eor
+	bcc	no_eor
+do_eor:
+	eor	#$1D
+no_eor:
+	sta	seed
 	rts
 
 fill_next_column:
