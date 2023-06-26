@@ -24,6 +24,7 @@ button_diff:	.res 1
 velocity:	.res 1
 in_the_air:	.res 1
 progress:	.res 1
+column_pos:	.res 1
 
 var_start:
 rooster_x:	.res 1
@@ -31,7 +32,6 @@ rooster_y:	.res 1
 rooster_frame:	.res 1
 platform:	.res 1
 seed:		.res 1
-column_pos:	.res 1
 column_tile:	.res 1
 column_height:	.res 1
 var_end:
@@ -44,7 +44,7 @@ oam_buffer:	.res 256
 .segment "RODATA"
 var_data:
 .byte $40, $7C, $C0, $7C
-.byte $42, $20, $20, $12
+.byte $42, $20, $12
 
 palette:
 .byte $0F, $03, $13, $23
@@ -73,6 +73,24 @@ sprites:
 .byte $00, $D2, $04, $10
 rooster_end:
 sprites_end:
+
+title_data:
+.byte $00, $26, $00, $00, $00
+.byte $01, $27, $00, $00, $00
+.byte $02, $28, $00, $00, $00
+.byte $04, $29, $00, $00, $00
+.byte $05, $27, $37, $47, $00
+.byte $06, $00, $38, $48, $00
+.byte $07, $29, $39, $49, $00
+.byte $08, $2A, $3A, $4A, $00
+.byte $09, $2B, $3B, $4B, $2D
+.byte $0A, $2C, $3C, $4C, $2E
+.byte $0B, $57, $3D, $4D, $2F
+.byte $0C, $58, $3E, $4E, $27
+.byte $0D, $59, $3B, $4B, $36
+.byte $0E, $00, $00, $00, $00
+.byte $0F, $00, $00, $00, $00
+title_end:
 
 .segment "CODE"
 
@@ -173,6 +191,8 @@ spin:	cmp	counter
 	jmp	loop
 
 title_screen:
+	jsr	draw_title_screen
+
 	;; check start button
 	lda	button_down
 	and	button_diff
@@ -180,6 +200,8 @@ title_screen:
 	beq	loop
 
 	;; start game
+	lda	#$20
+	sta	column_pos
 	jsr	copy_sprites_to_oam
 	jsr	move_rooster_sprites
 	inc	progress
@@ -518,6 +540,7 @@ update_column:
 update_ppu:
 	;; update column of nametable
 	lda	ppu_data + 0
+	beq	bad_ppu_data
 	sta	PPUADDR
 	lda	ppu_data + 1
 	sta	PPUADDR
@@ -559,6 +582,7 @@ update_ppu:
 	cpx	#8
 	bne	:-
 
+bad_ppu_data:
 	rts
 
 get_random_number:
@@ -597,4 +621,32 @@ generate_new_block:
 continue_old_block:
 	jsr	update_column
 skip_column_update:
+	rts
+
+draw_title_screen:
+	clc
+	lda	#$00
+	sta	scroll_x
+	sta	scroll_c
+	lda	#$20
+	sta	ppu_data + 0
+	ldx	column_pos
+	lda	title_data, X
+	adc	#9
+	sta	ppu_data + 1
+	inx
+	ldy	#0
+:
+	lda	title_data, X
+	sta	ppu_data + 12, Y
+	inx
+	iny
+	cpy	#4
+	bmi	:-
+
+	cpx	#(title_end - title_data)
+	bne	:+
+	ldx	#0
+:
+	stx	column_pos
 	rts
