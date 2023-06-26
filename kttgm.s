@@ -197,24 +197,28 @@ title_screen:
 	beq	loop
 
 	;; start fade
-	lda	#$00
-	sta	column_pos
-	lda	#%10000100
-	sta	ppu_ctrl
-	lda	#$02
-	sta	progress
+	jsr	start_fade
 
 	jmp	loop
 
 start_game:
+	lda	#$01
+	sta	progress
 	lda	#$20
 	sta	column_pos
 	lda	#%10000100
 	sta	ppu_ctrl
 	jsr	copy_sprites_to_oam
 	jsr	move_rooster_sprites
-	lda	#$01
+	rts
+
+start_fade:
+	lda	#$02
 	sta	progress
+	lda	#$00
+	sta	column_pos
+	lda	#%10000100
+	sta	ppu_ctrl
 	rts
 
 rooster_game:
