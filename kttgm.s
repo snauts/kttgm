@@ -32,6 +32,8 @@ rooster_y:	.res 1
 rooster_frame:	.res 1
 platform:	.res 1
 seed:		.res 1
+ppu_size:	.res 1
+color_size:	.res 1
 column_tile:	.res 1
 column_height:	.res 1
 var_end:
@@ -44,7 +46,8 @@ oam_buffer:	.res 256
 .segment "RODATA"
 var_data:
 .byte $40, $7C, $C0, $7C
-.byte $42, $20, $12
+.byte $42, $1E, $08, $20
+.byte $12
 
 palette:
 .byte $0F, $03, $13, $23
@@ -549,7 +552,7 @@ update_ppu:
 	lda	ppu_data + 2, X
 	sta	PPUDATA
 	inx
-	cpx	#30
+	cpx	ppu_size
 	bne	:-
 
 	;; update column of attributes
@@ -564,7 +567,7 @@ update_ppu:
 	ldy	attributes + 4, X
 	sty	PPUDATA
 	inx
-	cpx	#8
+	cpx	color_size
 	bne	:-
 
 	;; read next attributes
@@ -573,13 +576,14 @@ update_ppu:
 	lda	attributes + 3
 :
 	ldy	attributes + 2
+	beq	bad_ppu_data
 	sty	PPUADDR
 	sta	PPUADDR
 	adc	#8
 	ldy	PPUDATA
 	ldy	attributes + 4, X
 	inx
-	cpx	#8
+	cpx	color_size
 	bne	:-
 
 bad_ppu_data:
