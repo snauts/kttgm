@@ -31,12 +31,13 @@ var_start:
 rooster_x:	.res 1
 rooster_y:	.res 1
 rooster_frame:	.res 1
-platform:	.res 1
+ppu_ctrl:	.res 1
 seed:		.res 1
 ppu_size:	.res 1
 color_size:	.res 1
 column_tile:	.res 1
 column_height:	.res 1
+platform:	.res 1
 var_end:
 
 .segment "BSS"
@@ -46,9 +47,9 @@ oam_buffer:	.res 256
 
 .segment "RODATA"
 var_data:
-.byte $40, $7C, $C0, $7C
+.byte $40, $7C, $C0, $84
 .byte $42, $1E, $08, $20
-.byte $12
+.byte $12, $7C
 
 palette:
 .byte $0F, $03, $13, $23
@@ -145,7 +146,7 @@ nmi:
 
 	lda	scroll_c
 	and	#%00000001
-	ora	#%10000100
+	ora	ppu_ctrl
 	sta	PPUCTRL
 
 	lda	#%00011110
@@ -183,7 +184,7 @@ rst:
 	jsr	setup_pallete
 
 	jsr	wait_vblank
-	lda	#%10000100
+	lda	ppu_ctrl
 	sta	PPUCTRL
 
 loop:
