@@ -169,9 +169,13 @@ spin:	cmp	counter
 	beq 	spin
 
 	jsr	check_button
-	jsr	control_rooster
+	jsr	rooster_game
 
+	jmp	loop
+
+rooster_game:
 	;; update every 1 frame
+	jsr	control_rooster
 	jsr	fill_next_column
 	jsr	scroll_screen
 	jsr	move_rooster_position
@@ -186,8 +190,7 @@ spin:	cmp	counter
 
 finally:
 	jsr	move_rooster_sprites
-
-	jmp	loop
+	rts
 
 setup_pallete:
 	lda	#$3F
