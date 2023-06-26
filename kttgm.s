@@ -131,6 +131,7 @@ irq:
 	rti
 
 rst:
+	;; Setup stack and stuff
 	sei
 	cld
 	ldx	#$40
@@ -144,8 +145,7 @@ rst:
 
 	;; Wait for PPU to stabilize
 	jsr	wait_vblank
-	jmp	clear_memory
-done_clear_mem: ; clear will spoil stack so use jmp instead of jsr
+	jsr	clear_memory
 	jsr	wait_vblank
 
 	jsr	init_variables
@@ -334,7 +334,6 @@ clear_memory:
 	ldx	#0
 :
 	sta	$0000, X
-	sta	$0100, X
 	sta	$0200, X
 	sta	$0300, X
 	sta	$0400, X
@@ -353,7 +352,7 @@ clear_memory:
 	inx
 	inx
 	bne	:-
-	jmp	done_clear_mem
+	rts
 
 fill_ground_cell:
 	sta	ppu_data + 2, x
