@@ -23,9 +23,6 @@ button_down:	.res 1
 button_diff:	.res 1
 velocity:	.res 1
 in_the_air:	.res 1
-column_pos:	.res 1
-column_tile:	.res 1
-column_height:	.res 1
 
 var_start:
 rooster_x:	.res 1
@@ -33,6 +30,9 @@ rooster_y:	.res 1
 rooster_frame:	.res 1
 platform:	.res 1
 seed:		.res 1
+column_pos:	.res 1
+column_tile:	.res 1
+column_height:	.res 1
 var_end:
 
 .segment "BSS"
@@ -43,7 +43,7 @@ oam_buffer:	.res 256
 .segment "RODATA"
 var_data:
 .byte $40, $7C, $C0, $7C
-.byte $42
+.byte $42, $20, $20, $12
 
 palette:
 .byte $0F, $03, $13, $23
@@ -155,7 +155,6 @@ rst:
 	lda	#%00000100
 	sta	PPUCTRL
 
-	jsr	fill_background
 	jsr	copy_sprites_to_oam
 	jsr	move_rooster_sprites
 
@@ -501,27 +500,6 @@ update_column:
 	jsr	setup_attributes
 	jsr	fill_column
 	inc	column_tile
-	rts
-
-fill_background:
-	lda	#$12
-	sta	column_height
-	lda	#0
-:
-	pha
-	lda	#$20
-	sta	column_tile
-:
-	jsr	update_column
-	jsr	update_ppu
-	lda	column_tile
-	cmp	#$24
-	bne	:-
-	pla
-	clc
-	adc	#1
-	cmp	#8
-	bne	:--
 	rts
 
 update_ppu:
