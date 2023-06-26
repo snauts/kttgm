@@ -20,6 +20,7 @@ counter:	.res 1
 scroll_x:	.res 1
 scroll_c:	.res 1
 button_down:	.res 1
+button_diff:	.res 1
 velocity:	.res 1
 in_the_air:	.res 1
 column_pos:	.res 1
@@ -168,6 +169,7 @@ spin:	cmp	counter
 	beq 	spin
 
 	jsr	check_button
+	jsr	control_rooster
 
 	;; update every 1 frame
 	jsr	fill_next_column
@@ -293,6 +295,8 @@ move_rooster_position:
 	bmi	:+
 	lda	#$00
 	sta	in_the_air
+	lda	platform
+	sta	rooster_y
 :
 	rts
 
@@ -302,14 +306,28 @@ check_button:
 	lda	#$00
 	sta	JOY1
 
+	ldx	#8
+:
+	pha
 	lda	JOY1
 	and	#%00000001
-	ldx	button_down
-	sta	button_down
-	cpx	#$00
-	bne	:+
-	cmp	#$01
-	bne	:+
+	cmp	#%00000001
+	pla
+	ror
+	dex
+	bne	:-
+
+	tax
+	eor	button_down
+	sta	button_diff
+	stx	button_down
+	rts
+
+control_rooster:
+	lda	button_down
+	and	button_diff
+	and	#%00000001
+	beq	:+
 	lda	in_the_air
 	cmp	#$00
 	bne	:+
