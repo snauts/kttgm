@@ -25,7 +25,6 @@ velocity:	.res 1
 in_the_air:	.res 1
 progress:	.res 1
 column_pos:	.res 1
-attribute_idx:	.res 1
 
 var_start:
 rooster_x:	.res 1
@@ -47,7 +46,7 @@ oam_buffer:	.res 256
 
 .segment "RODATA"
 var_data:
-.byte $40, $7C, $C0, $84
+.byte $40, $7C, $C0, $80
 .byte $42, $1E, $08, $20
 .byte $12, $7C
 
@@ -80,29 +79,15 @@ rooster_end:
 sprites_end:
 
 title_data:
-.byte $09, $26, $00, $00, $00
-.byte $0A, $27, $00, $00, $00
-.byte $0B, $28, $00, $00, $00
-.byte $0D, $29, $00, $00, $00
-.byte $0E, $27, $37, $47, $00
-.byte $0F, $00, $38, $48, $00
-.byte $10, $29, $39, $49, $00
-.byte $11, $2A, $3A, $4A, $00
-.byte $12, $2B, $3B, $4B, $2D
-.byte $13, $2C, $3C, $4C, $2E
-.byte $14, $57, $3D, $4D, $2F
-.byte $15, $58, $3E, $4E, $27
-.byte $16, $59, $3B, $4B, $36
-.byte $17, $00, $00, $00, $00
-.byte $18, $00, $00, $00, $00
+.byte $05, $23, $DB, $05, $A5, $A5
+.byte $06, $23, $D2, $A0, $A0, $A0, $50
+.byte $10, $21, $69, $26, $27, $28, $00, $29, $27
+.byte      $00, $29, $2A, $2B, $2C, $57, $58, $59
+.byte $0B, $21, $8E, $37, $38, $39, $3A, $3B, $3C, $3D, $3E, $3B
+.byte $0B, $21, $AE, $47, $48, $49, $4A, $4B, $4C, $4D, $4E, $4B
+.byte $07, $21, $D2, $2D, $2E, $2F, $27, $36
+.byte $00
 title_end:
-
-title_color:
-.byte $C2, $A0, $00
-.byte $C3, $A0, $05
-.byte $C4, $A0, $A5
-.byte $C5, $50, $A5
-title_color_end:
 
 .segment "CODE"
 
@@ -214,6 +199,8 @@ title_screen:
 	;; start game
 	lda	#$20
 	sta	column_pos
+	lda	#%10000100
+	sta	ppu_ctrl
 	jsr	copy_sprites_to_oam
 	jsr	move_rooster_sprites
 	inc	progress
@@ -570,6 +557,7 @@ update_ppu:
 	lda	attributes + 1
 :
 	ldy	attributes + 0
+	beq	bad_ppu_data
 	sty	PPUADDR
 	sta	PPUADDR
 	adc	#8
@@ -611,6 +599,8 @@ no_eor:
 	rts
 
 fill_next_column:
+	lda	#$1E
+	sta	ppu_size
 	lda	scroll_x
 	and	#7
 	cmp	#0
@@ -641,45 +631,29 @@ draw_title_screen:
 	sta	scroll_x
 	sta	scroll_c
 
-	lda	#$20
-	ldy	#$00
-	sta	ppu_data + 0
+	lda	#%10000000
+	sta	ppu_ctrl
+
 	ldx	column_pos
-	lda	title_data, X
-	sta	ppu_data + 1
-	inx
 :
 	lda	title_data, X
-	sta	ppu_data + 13, Y
-	inx
-	iny
-	cpy	#4
-	bmi	:-
-
-	cpx	#(title_end - title_data)
 	bne	:+
-	ldx	#0
+	ldx	#$00
+	jmp	:-
 :
-	stx	column_pos
-
-	lda	#$23
+	sta	ppu_size
 	ldy	#$00
-	sta	attributes + 0
-	ldx	attribute_idx
-	lda	title_color, X
-	sta	attributes + 1
 	inx
 :
-	lda	title_color, X
-	sta	attributes + 6, Y
+	lda	title_data, X
+	sta	ppu_data, Y
 	inx
 	iny
-	cpy	#2
-	bmi	:-
+	cpy	ppu_size
+	bne	:-
 
-	cpx	#(title_color_end - title_color)
-	bne	:+
-	ldx	#0
-:
-	stx	attribute_idx
+	dec	ppu_size
+	dec	ppu_size
+
+	stx	column_pos
 	rts
