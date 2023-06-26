@@ -46,7 +46,7 @@ var_data:
 
 palette:
 .byte $0F, $03, $13, $23
-.byte $0F, $0F, $0F, $0F
+.byte $0F, $06, $16, $26
 .byte $0F, $08, $18, $28
 .byte $0F, $09, $19, $29
 
