@@ -443,7 +443,7 @@ shift_attribute:
 	lda	column_pos
 	and	#$02
 	cmp	#$00
-	beq	:+
+	bne	:+
 	pla
 	lsr
 	lsr
