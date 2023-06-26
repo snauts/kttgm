@@ -566,19 +566,24 @@ fill_next_column:
 	lda	scroll_x
 	and	#7
 	cmp	#0
-	bne	:++
+	bne	skip_column_update
 	lda	column_tile
 	cmp	#$24
-	bmi	:+
+	beq	generate_new_block
+	cmp	#$26
+	bne	continue_old_block
+generate_new_block:
 	jsr	get_random_number
 	clc
 	and	#$07
 	asl
 	adc	#$08
 	sta	column_height
-	lda	#$20
+	jsr	get_random_number
+	and	#$04
+	ora	#$20
 	sta	column_tile
-:
+continue_old_block:
 	jsr	update_column
-:
+skip_column_update:
 	rts
