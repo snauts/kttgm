@@ -194,6 +194,7 @@ start_title:
 	sta	column_pos
 	lda	#%10000000
 	sta	ppu_ctrl
+	jsr	hide_all_sprites
 	rts
 
 title_screen:
@@ -450,6 +451,10 @@ clear_memory:
 	inx
 	bne	:-
 
+	jsr	hide_all_sprites
+	rts
+
+hide_all_sprites:
 	lda	#255
 	ldx	#0
 :
