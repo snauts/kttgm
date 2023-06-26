@@ -187,6 +187,15 @@ spin:	cmp	counter
 
 	jmp	loop
 
+start_title:
+	lda	#$00
+	sta	progress
+	lda	#$00
+	sta	column_pos
+	lda	#%10000000
+	sta	ppu_ctrl
+	rts
+
 title_screen:
 	jsr	draw_title_screen
 
@@ -212,15 +221,6 @@ start_game:
 	jsr	move_rooster_sprites
 	rts
 
-start_fade:
-	lda	#$02
-	sta	progress
-	lda	#$00
-	sta	column_pos
-	lda	#%10000100
-	sta	ppu_ctrl
-	rts
-
 rooster_game:
 	;; update every 1 frame
 	jsr	control_rooster
@@ -238,6 +238,15 @@ rooster_game:
 finally:
 	jsr	move_rooster_sprites
 	jmp	loop
+
+start_fade:
+	lda	#$02
+	sta	progress
+	lda	#$00
+	sta	column_pos
+	lda	#%10000100
+	sta	ppu_ctrl
+	rts
 
 fade_screen:
 	lda	#30
