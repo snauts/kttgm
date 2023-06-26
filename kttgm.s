@@ -182,6 +182,8 @@ spin:	cmp	counter
 	beq	title_screen
 	cmp	#01
 	beq	rooster_game
+	cmp	#02
+	beq	fade_screen
 
 	jmp	loop
 
@@ -194,16 +196,26 @@ title_screen:
 	and	#%00001000
 	beq	loop
 
-	;; start game
+	;; start fade
+	lda	#$00
+	sta	column_pos
+	lda	#%10000100
+	sta	ppu_ctrl
+	lda	#$02
+	sta	progress
+
+	jmp	loop
+
+start_game:
 	lda	#$20
 	sta	column_pos
 	lda	#%10000100
 	sta	ppu_ctrl
 	jsr	copy_sprites_to_oam
 	jsr	move_rooster_sprites
-	inc	progress
-
-	jmp	loop
+	lda	#$01
+	sta	progress
+	rts
 
 rooster_game:
 	;; update every 1 frame
@@ -221,6 +233,36 @@ rooster_game:
 	jsr	animate_rooster_sprites
 finally:
 	jsr	move_rooster_sprites
+	jmp	loop
+
+fade_screen:
+	lda	#30
+	sta	ppu_size
+	lda	#$00
+	ldx	#$00
+:
+	sta	ppu_data + 2, X
+	inx
+	cpx	#30
+	bne	:-
+
+	lda	column_pos
+	cmp	#$40
+	beq	fade_done
+	and	#$20
+	lsr
+	lsr
+	lsr
+	ora	#$20
+	sta	ppu_data + 0
+	lda	column_pos
+	and	#$1F
+	sta	ppu_data + 1
+	inc	column_pos
+	jmp	loop
+
+fade_done:
+	jsr	start_game
 	jmp	loop
 
 setup_pallete:
