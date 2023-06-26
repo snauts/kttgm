@@ -23,6 +23,7 @@ button_down:	.res 1
 button_diff:	.res 1
 velocity:	.res 1
 in_the_air:	.res 1
+progress:	.res 1
 
 var_start:
 rooster_x:	.res 1
@@ -152,12 +153,6 @@ rst:
 	jsr	init_variables
 	jsr	setup_pallete
 
-	lda	#%00000100
-	sta	PPUCTRL
-
-	jsr	copy_sprites_to_oam
-	jsr	move_rooster_sprites
-
 	jsr	wait_vblank
 	lda	#%10000100
 	sta	PPUCTRL
@@ -168,7 +163,26 @@ spin:	cmp	counter
 	beq 	spin
 
 	jsr	check_button
-	jsr	rooster_game
+
+	lda	progress
+	cmp	#00
+	beq	title_screen
+	cmp	#01
+	beq	rooster_game
+
+	jmp	loop
+
+title_screen:
+	;; check start button
+	lda	button_down
+	and	button_diff
+	and	#%00001000
+	beq	loop
+
+	;; start game
+	jsr	copy_sprites_to_oam
+	jsr	move_rooster_sprites
+	inc	progress
 
 	jmp	loop
 
@@ -186,10 +200,9 @@ rooster_game:
 
 	;; update every 4 frames
 	jsr	animate_rooster_sprites
-
 finally:
 	jsr	move_rooster_sprites
-	rts
+	jmp	loop
 
 setup_pallete:
 	lda	#$3F
