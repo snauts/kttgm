@@ -25,6 +25,7 @@ velocity:	.res 1
 in_the_air:	.res 1
 progress:	.res 1
 column_pos:	.res 1
+attribute_idx:	.res 1
 
 var_start:
 rooster_x:	.res 1
@@ -78,22 +79,29 @@ rooster_end:
 sprites_end:
 
 title_data:
-.byte $00, $26, $00, $00, $00
-.byte $01, $27, $00, $00, $00
-.byte $02, $28, $00, $00, $00
-.byte $04, $29, $00, $00, $00
-.byte $05, $27, $37, $47, $00
-.byte $06, $00, $38, $48, $00
-.byte $07, $29, $39, $49, $00
-.byte $08, $2A, $3A, $4A, $00
-.byte $09, $2B, $3B, $4B, $2D
-.byte $0A, $2C, $3C, $4C, $2E
-.byte $0B, $57, $3D, $4D, $2F
-.byte $0C, $58, $3E, $4E, $27
-.byte $0D, $59, $3B, $4B, $36
-.byte $0E, $00, $00, $00, $00
-.byte $0F, $00, $00, $00, $00
+.byte $09, $26, $00, $00, $00
+.byte $0A, $27, $00, $00, $00
+.byte $0B, $28, $00, $00, $00
+.byte $0D, $29, $00, $00, $00
+.byte $0E, $27, $37, $47, $00
+.byte $0F, $00, $38, $48, $00
+.byte $10, $29, $39, $49, $00
+.byte $11, $2A, $3A, $4A, $00
+.byte $12, $2B, $3B, $4B, $2D
+.byte $13, $2C, $3C, $4C, $2E
+.byte $14, $57, $3D, $4D, $2F
+.byte $15, $58, $3E, $4E, $27
+.byte $16, $59, $3B, $4B, $36
+.byte $17, $00, $00, $00, $00
+.byte $18, $00, $00, $00, $00
 title_end:
+
+title_color:
+.byte $C2, $A0, $00
+.byte $C3, $A0, $05
+.byte $C4, $A0, $A5
+.byte $C5, $50, $A5
+title_color_end:
 
 .segment "CODE"
 
@@ -628,21 +636,20 @@ skip_column_update:
 	rts
 
 draw_title_screen:
-	clc
 	lda	#$00
 	sta	scroll_x
 	sta	scroll_c
+
 	lda	#$20
+	ldy	#$00
 	sta	ppu_data + 0
 	ldx	column_pos
 	lda	title_data, X
-	adc	#9
 	sta	ppu_data + 1
 	inx
-	ldy	#0
 :
 	lda	title_data, X
-	sta	ppu_data + 12, Y
+	sta	ppu_data + 13, Y
 	inx
 	iny
 	cpy	#4
@@ -653,4 +660,25 @@ draw_title_screen:
 	ldx	#0
 :
 	stx	column_pos
+
+	lda	#$23
+	ldy	#$00
+	sta	attributes + 0
+	ldx	attribute_idx
+	lda	title_color, X
+	sta	attributes + 1
+	inx
+:
+	lda	title_color, X
+	sta	attributes + 6, Y
+	inx
+	iny
+	cpy	#2
+	bmi	:-
+
+	cpx	#(title_color_end - title_color)
+	bne	:+
+	ldx	#0
+:
+	stx	attribute_idx
 	rts
