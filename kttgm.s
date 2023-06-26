@@ -75,7 +75,6 @@ sprites:
 .byte $00, $D0, $04, $00
 .byte $00, $D1, $04, $08
 .byte $00, $D2, $04, $10
-rooster_end:
 sprites_end:
 
 title_data:
@@ -307,7 +306,7 @@ move_rooster_sprites:
 	inx
 	inx
 	inx
-	cpx	#(rooster_end - sprites)
+	cpx	#(sprites_end - sprites)
 	bne	:-
 	rts
 
