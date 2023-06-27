@@ -210,7 +210,6 @@ rooster_game:
 
 	lda	counter
 	and	#$03
-	cmp	#$00
 	bne	finally
 
 	;; update every 4 frames
