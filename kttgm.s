@@ -706,12 +706,14 @@ update_platforms:
 	asl
 	asl
 	asl
+	sec
 	sbc	#20
 	ldx	platform_idx
 	sta	platforms, X
 	inx
 	txa
 	and	#$0f
+	sta	platform_idx
 :
 	rts
 
