@@ -50,7 +50,7 @@ oam_buffer:	.res 256
 
 .segment "RODATA"
 var_data:
-.byte $40, $7C, $C0, $80
+.byte $38, $7C, $C0, $80
 .byte $42, $1E
 
 palette:
@@ -380,8 +380,8 @@ move_rooster_position:
 	lda	velocity
 	adc	rooster_y
 	sta	rooster_y
-
-	;; landing
+:
+	lda	rooster_y
 	cmp	footing + 1
 	bmi	:+
 	lda	#$00
