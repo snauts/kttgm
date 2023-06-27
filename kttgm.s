@@ -115,6 +115,7 @@ BUTTON_START	= %00001000
 
 VELOCITY	= 252
 GRAVITATION	= 4
+FALLING		= 8
 
 nmi:
 	pha
@@ -368,38 +369,45 @@ get_footing:
 move_rooster_position:
 	jsr	get_footing
 	lda	in_the_air
-	beq	:++
+	beq	snap_to_platform
 
 	dec	gravity
-	bne	:+
+	bne	adjust_vertical_pos
 	inc	velocity
 	lda	#GRAVITATION
 	sta	gravity
-:
+adjust_vertical_pos:
 	clc
 	lda	velocity
 	adc	rooster_y
 	sta	rooster_y
-:
+snap_to_platform:
 	lda	rooster_y
 	cmp	footing + 1
-	bcc	:+
+	bcc	consider_falling
 	lda	#$00
 	sta	in_the_air
 	lda	footing + 1
 	sta	rooster_y
-:
+consider_falling:
 	lda	in_the_air
-	bne	:+
+	bne	exit_move_rooster
+
+	lda	scroll_x
+	and	#$0F
+	cmp	#FALLING
+	bcs	:+
+
 	lda	rooster_y
 	cmp	footing + 0
-	bcs	:+
+	bcs	exit_move_rooster
+:
 	lda	rooster_y
 	cmp	footing + 1
-	bcs	:+
+	bcs	exit_move_rooster
 	lda	#$00
 	jmp	jump_rooster
-:
+exit_move_rooster:
 	rts
 
 check_button:
