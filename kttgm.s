@@ -15,6 +15,7 @@
 
 .segment "ZEROPAGE"
 ppu_data:	.res 32
+platforms:	.res 16
 attributes:	.res 12
 counter:	.res 1
 scroll_x:	.res 1
@@ -29,6 +30,7 @@ column_pos:	.res 1
 column_tile:	.res 1
 column_height:	.res 1
 fade_start:	.res 1
+platform_idx:	.res 1
 
 var_start:
 rooster_x:	.res 1
@@ -37,7 +39,6 @@ rooster_frame:	.res 1
 ppu_ctrl:	.res 1
 seed:		.res 1
 ppu_size:	.res 1
-platform:	.res 1
 var_end:
 
 .segment "BSS"
@@ -48,7 +49,7 @@ oam_buffer:	.res 256
 .segment "RODATA"
 var_data:
 .byte $40, $7C, $C0, $80
-.byte $42, $1E, $7C
+.byte $42, $1E
 
 palette:
 .byte $0F, $03, $13, $23
@@ -359,11 +360,11 @@ move_rooster_position:
 	sta	rooster_y
 
 	;; landing
-	cmp	platform
+	cmp	platforms
 	bmi	:+
 	lda	#$00
 	sta	in_the_air
-	lda	platform
+	lda	platforms
 	sta	rooster_y
 :
 	rts
@@ -574,6 +575,7 @@ attribute_loop:
 	rts
 
 update_column:
+	jsr	update_platforms
 	jsr	setup_attributes
 	jsr	fill_column
 	inc	column_tile
@@ -693,6 +695,24 @@ draw_title_screen:
 	dec	ppu_size
 
 	stx	column_pos
+	rts
+
+update_platforms:
+	lda	column_pos
+	and	#$01
+	bne	:+
+	lda	column_height
+	clc
+	asl
+	asl
+	asl
+	sbc	#20
+	ldx	platform_idx
+	sta	platforms, X
+	inx
+	txa
+	and	#$0f
+:
 	rts
 
 blank_ppu_buffer:
