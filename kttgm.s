@@ -446,6 +446,17 @@ jump_rooster:
 
 control_rooster:
 	lda	button_last
+	and	#BUTTON_START
+	beq	:+
+	lda	pause
+	eor	#1
+	sta	pause
+:
+	lda	pause
+	beq	:+
+	jmp	loop
+:
+	lda	button_last
 	and	#BUTTON_A
 	beq	:+
 	lda	in_the_air
