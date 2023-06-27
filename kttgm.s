@@ -24,6 +24,7 @@ button_down:	.res 1
 button_diff:	.res 1
 button_last:	.res 1
 velocity:	.res 1
+gravity:	.res 1
 in_the_air:	.res 1
 progress:	.res 1
 column_pos:	.res 1
@@ -111,6 +112,9 @@ OAM_X		= $03
 BUTTON_A	= %00000001
 BUTTON_B	= %00000010
 BUTTON_START	= %00001000
+
+VELOCITY	= 252
+GRAVITATION	= 4
 
 nmi:
 	pha
@@ -353,10 +357,10 @@ get_platform_height:
 	rts
 
 get_footing:
-	lda	#4
+	lda	#3
 	jsr	get_platform_height
 	sta	footing + 0
-	lda	#3
+	lda	#4
 	jsr	get_platform_height
 	sta	footing + 1
 	rts
@@ -364,24 +368,25 @@ get_footing:
 move_rooster_position:
 	jsr	get_footing
 	lda	in_the_air
-	beq	:+
+	beq	:++
 
-	lda	velocity
+	dec	gravity
+	bne	:+
 	inc	velocity
-	lsr
-	lsr
+	lda	#GRAVITATION
+	sta	gravity
+:
 	clc
-	adc	#252 		; this controls jumping height
-	clc
+	lda	velocity
 	adc	rooster_y
 	sta	rooster_y
 
 	;; landing
-	cmp	footing
+	cmp	footing + 1
 	bmi	:+
 	lda	#$00
 	sta	in_the_air
-	lda	footing
+	lda	footing + 1
 	sta	rooster_y
 :
 	rts
@@ -417,8 +422,10 @@ control_rooster:
 	beq	:+
 	lda	in_the_air
 	bne	:+
-	lda	#$00
+	lda	#VELOCITY
 	sta	velocity
+	lda	#GRAVITATION
+	sta	gravity
 	inc	in_the_air
 :
 	rts
