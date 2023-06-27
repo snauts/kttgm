@@ -32,7 +32,9 @@ column_tile:	.res 1
 column_height:	.res 1
 fade_start:	.res 1
 platform_idx:	.res 1
-footing:	.res 2
+footing_prev:	.res 1
+footing_next:	.res 1
+pause:		.res 1
 
 var_start:
 rooster_x:	.res 1
@@ -360,10 +362,10 @@ get_platform_height:
 get_footing:
 	lda	#3
 	jsr	get_platform_height
-	sta	footing + 0
+	sta	footing_prev
 	lda	#4
 	jsr	get_platform_height
-	sta	footing + 1
+	sta	footing_next
 	rts
 
 move_rooster_position:
@@ -383,11 +385,11 @@ adjust_vertical_pos:
 	sta	rooster_y
 snap_to_platform:
 	lda	rooster_y
-	cmp	footing + 1
+	cmp	footing_next
 	bcc	consider_falling
 	lda	#$00
 	sta	in_the_air
-	lda	footing + 1
+	lda	footing_next
 	sta	rooster_y
 consider_falling:
 	lda	in_the_air
@@ -399,11 +401,11 @@ consider_falling:
 	bcs	:+
 
 	lda	rooster_y
-	cmp	footing + 0
+	cmp	footing_prev
 	bcs	exit_move_rooster
 :
 	lda	rooster_y
-	cmp	footing + 1
+	cmp	footing_next
 	bcs	exit_move_rooster
 	lda	#$00
 	jmp	jump_rooster
