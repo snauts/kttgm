@@ -762,11 +762,9 @@ fill_even_ground:
 	rts
 
 launch_game:
-	;; check start button
 	lda	button_last
 	and	#BUTTON_START
-	beq	loop
-
-	;; start fade
+	beq	:+
 	jsr	start_fade
+:
 	rts
