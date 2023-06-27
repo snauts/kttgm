@@ -389,6 +389,17 @@ move_rooster_position:
 	lda	footing + 1
 	sta	rooster_y
 :
+	lda	in_the_air
+	bne	:+
+	lda	rooster_y
+	cmp	footing + 0
+	bcs	:+
+	lda	rooster_y
+	cmp	footing + 1
+	bcs	:+
+	lda	#$00
+	jmp	jump_rooster
+:
 	rts
 
 check_button:
@@ -416,6 +427,13 @@ check_button:
 	sta	button_last
 	rts
 
+jump_rooster:
+	sta	velocity
+	lda	#GRAVITATION
+	sta	gravity
+	inc	in_the_air
+	rts
+
 control_rooster:
 	lda	button_last
 	and	#BUTTON_A
@@ -423,10 +441,7 @@ control_rooster:
 	lda	in_the_air
 	bne	:+
 	lda	#VELOCITY
-	sta	velocity
-	lda	#GRAVITATION
-	sta	gravity
-	inc	in_the_air
+	jsr	jump_rooster
 :
 	rts
 
