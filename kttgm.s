@@ -183,10 +183,8 @@ spin:	cmp	counter
 	beq	title_screen
 	cmp	#01
 	beq	rooster_game
-	cmp	#02
-	beq	fade_screen
 
-	jmp	loop
+	jmp	fade_screen
 
 title_screen:
 	jsr	draw_title_screen
@@ -202,7 +200,6 @@ title_screen:
 	jmp	loop
 
 rooster_game:
-	;; update every 1 frame
 	jsr	control_rooster
 	jsr	fill_next_column
 	jsr	scroll_screen
@@ -213,27 +210,7 @@ rooster_game:
 
 fade_screen:
 	jsr	blank_ppu_buffer
-
-	clc
-	lda	column_pos
-	cmp	#$40
-	beq	fade_done
-	adc	fade_start
-	and	#$20
-	lsr
-	lsr
-	lsr
-	ora	#$20
-	sta	ppu_data + 0
-	lda	column_pos
-	adc	fade_start
-	and	#$1F
-	sta	ppu_data + 1
-	inc	column_pos
-	jmp	loop
-
-fade_done:
-	jsr	start_game
+	jsr	sweep_screen
 	jmp	loop
 
 start_title:
@@ -744,3 +721,24 @@ update_ppu_ctrl:
 	ora	ppu_ctrl
 	sta	PPUCTRL
 	rts
+
+sweep_screen:
+	clc
+	lda	column_pos
+	cmp	#$40
+	beq	fade_done
+	adc	fade_start
+	and	#$20
+	lsr
+	lsr
+	lsr
+	ora	#$20
+	sta	ppu_data + 0
+	lda	column_pos
+	adc	fade_start
+	and	#$1F
+	sta	ppu_data + 1
+	inc	column_pos
+	rts
+fade_done:
+	jmp	start_game
