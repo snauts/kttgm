@@ -294,7 +294,6 @@ animate_rooster_sprites:
 	tax
 
 	lda	in_the_air
-	cmp	#0
 	beq	:+
 	ldx	#$B0
 :
@@ -358,7 +357,6 @@ get_footing:
 move_rooster_position:
 	jsr	get_footing
 	lda	in_the_air
-	cmp	#$00
 	beq	:+
 
 	lda	velocity
@@ -411,7 +409,6 @@ control_rooster:
 	and	#BUTTON_A
 	beq	:+
 	lda	in_the_air
-	cmp	#$00
 	bne	:+
 	lda	#$00
 	sta	velocity
@@ -541,7 +538,6 @@ shift_attribute:
 	pha
 	lda	column_pos
 	and	#$02
-	cmp	#$00
 	bne	:+
 	pla
 	lsr
@@ -658,7 +654,6 @@ no_eor:
 fill_next_column:
 	lda	scroll_x
 	and	#7
-	cmp	#0
 	bne	skip_column_update
 	lda	column_tile
 	cmp	#$24
