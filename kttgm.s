@@ -127,10 +127,7 @@ nmi:
 	sta	PPUSCROLL
 	stx	PPUSCROLL
 
-	lda	scroll_c
-	and	#%00000001
-	ora	ppu_ctrl
-	sta	PPUCTRL
+	jsr	update_ppu_ctrl
 
 	lda	#%00011110
 	sta	PPUMASK
@@ -167,8 +164,7 @@ rst:
 	jsr	setup_pallete
 
 	jsr	wait_vblank
-	lda	ppu_ctrl
-	sta	PPUCTRL
+	jsr	update_ppu_ctrl
 
 loop:
 	lda	counter
@@ -738,4 +734,11 @@ get_fade_start:
 	lsr
 	lsr
 	sta	fade_start
+	rts
+
+update_ppu_ctrl:
+	lda	scroll_c
+	and	#%00000001
+	ora	ppu_ctrl
+	sta	PPUCTRL
 	rts
