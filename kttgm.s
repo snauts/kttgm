@@ -387,10 +387,10 @@ adjust_vertical_pos:
 	sta	rooster_y
 
 snap_to_platform:
-	lda	scroll_x
-	and	#$0F
-	cmp	#BUMPING
-	bcc	consider_falling
+	;; lda	scroll_x
+	;; and	#$0F
+	;; cmp	#BUMPING
+	;; bcc	consider_falling
 
 	lda	rooster_y
 	cmp	footing_next
