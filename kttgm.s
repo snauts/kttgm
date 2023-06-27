@@ -21,6 +21,7 @@ scroll_x:	.res 1
 scroll_c:	.res 1
 button_down:	.res 1
 button_diff:	.res 1
+button_last:	.res 1
 velocity:	.res 1
 in_the_air:	.res 1
 progress:	.res 1
@@ -105,6 +106,10 @@ JOY2		= $4017
 OAM_Y		= $00
 OAM_X		= $03
 
+BUTTON_A	= %00000001
+BUTTON_B	= %00000010
+BUTTON_START	= %00001000
+
 nmi:
 	pha
 	txa
@@ -187,9 +192,8 @@ title_screen:
 	jsr	draw_title_screen
 
 	;; check start button
-	lda	button_down
-	and	button_diff
-	and	#%00001000
+	lda	button_last
+	and	#BUTTON_START
 	beq	loop
 
 	;; start fade
@@ -409,12 +413,13 @@ check_button:
 	eor	button_down
 	sta	button_diff
 	stx	button_down
+	and	button_down
+	sta	button_last
 	rts
 
 control_rooster:
-	lda	button_down
-	and	button_diff
-	and	#%00000001
+	lda	button_last
+	and	#BUTTON_A
 	beq	:+
 	lda	in_the_air
 	cmp	#$00
