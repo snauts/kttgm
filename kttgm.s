@@ -207,14 +207,7 @@ rooster_game:
 	jsr	fill_next_column
 	jsr	scroll_screen
 	jsr	move_rooster_position
-
-	lda	counter
-	and	#$03
-	bne	finally
-
-	;; update every 4 frames
 	jsr	animate_rooster_sprites
-finally:
 	jsr	move_rooster_sprites
 	jmp	loop
 
@@ -307,6 +300,10 @@ copy_sprites_to_oam:
 	rts
 
 animate_rooster_sprites:
+	lda	counter
+	and	#$03
+	bne	:++
+
 	clc
 	lda	rooster_frame
 	adc	#$02
@@ -328,6 +325,7 @@ animate_rooster_sprites:
 	lda	#$D4
 	sbc	in_the_air
 	sta	oam_buffer + 9
+:
 	rts
 
 wait_vblank:
