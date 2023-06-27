@@ -182,21 +182,19 @@ spin:	cmp	counter
 	cmp	#00
 	beq	title_screen
 	cmp	#01
+	beq	prepare_game
+	cmp	#02
 	beq	rooster_game
 
 	jmp	fade_screen
 
 title_screen:
 	jsr	draw_title_screen
+	jsr	launch_game
+	jmp	loop
 
-	;; check start button
-	lda	button_last
-	and	#BUTTON_START
-	beq	loop
-
-	;; start fade
-	jsr	start_fade
-
+prepare_game:
+	jsr	fill_even_ground
 	jmp	loop
 
 rooster_game:
@@ -227,20 +225,24 @@ start_title:
 start_game:
 	lda	#$01
 	sta	progress
-	lda	#$20
+	lda	#$00
 	sta	column_pos
+	lda	#$20
 	sta	column_tile
 	lda	#$12
 	sta	column_height
-	lda	#%10000100
-	sta	ppu_ctrl
 	jsr	reset_scroll
+	rts
+
+start_rooster:
+	lda	#$02
+	sta	progress
 	jsr	copy_sprites_to_oam
 	jsr	move_rooster_sprites
 	rts
 
 start_fade:
-	lda	#$02
+	lda	#$F1
 	sta	progress
 	lda	#$00
 	sta	column_pos
@@ -742,3 +744,29 @@ sweep_screen:
 	rts
 fade_done:
 	jmp	start_game
+
+fill_even_ground:
+	jsr	update_column
+
+	lda	column_tile
+	cmp	#$24
+	bne	:+
+	lda	#$20
+	sta	column_tile
+:
+	lda	column_pos
+	cmp	#$20
+	bne	:+
+	jsr	start_rooster
+:
+	rts
+
+launch_game:
+	;; check start button
+	lda	button_last
+	and	#BUTTON_START
+	beq	loop
+
+	;; start fade
+	jsr	start_fade
+	rts
