@@ -31,6 +31,7 @@ column_tile:	.res 1
 column_height:	.res 1
 fade_start:	.res 1
 platform_idx:	.res 1
+footing:	.res 1
 
 var_start:
 rooster_x:	.res 1
@@ -344,7 +345,18 @@ move_rooster_sprites:
 	bne	:-
 	rts
 
+get_footing:
+	clc
+	lda	#4
+	adc	platform_idx
+	and	#$0F
+	tax
+	lda	platforms, X
+	sta	footing
+	rts
+
 move_rooster_position:
+	jsr	get_footing
 	lda	in_the_air
 	cmp	#$00
 	beq	:+
@@ -360,11 +372,11 @@ move_rooster_position:
 	sta	rooster_y
 
 	;; landing
-	cmp	platforms
+	cmp	footing
 	bmi	:+
 	lda	#$00
 	sta	in_the_air
-	lda	platforms
+	lda	footing
 	sta	rooster_y
 :
 	rts
