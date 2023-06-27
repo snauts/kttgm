@@ -27,6 +27,7 @@ progress:	.res 1
 column_pos:	.res 1
 column_tile:	.res 1
 column_height:	.res 1
+fade_start:	.res 1
 
 var_start:
 rooster_x:	.res 1
@@ -186,17 +187,6 @@ spin:	cmp	counter
 
 	jmp	loop
 
-start_title:
-	lda	#$00
-	sta	progress
-	lda	#$00
-	sta	column_pos
-	lda	#%10000000
-	sta	ppu_ctrl
-	jsr	reset_scroll
-	jsr	hide_all_sprites
-	rts
-
 title_screen:
 	jsr	draw_title_screen
 
@@ -210,22 +200,6 @@ title_screen:
 	jsr	start_fade
 
 	jmp	loop
-
-start_game:
-	lda	#$01
-	sta	progress
-	lda	#$20
-	sta	column_pos
-	sta	column_tile
-	lda	#$12
-	sta	column_height
-
-	lda	#%10000100
-	sta	ppu_ctrl
-	jsr	reset_scroll
-	jsr	copy_sprites_to_oam
-	jsr	move_rooster_sprites
-	rts
 
 rooster_game:
 	;; update every 1 frame
@@ -245,30 +219,14 @@ finally:
 	jsr	move_rooster_sprites
 	jmp	loop
 
-start_fade:
-	lda	#$02
-	sta	progress
-	lda	#$00
-	sta	column_pos
-	lda	#%10000100
-	sta	ppu_ctrl
-	jsr	hide_all_sprites
-	rts
-
 fade_screen:
-	lda	#30
-	sta	ppu_size
-	lda	#$00
-	ldx	#$00
-:
-	sta	ppu_data + 2, X
-	inx
-	cpx	#30
-	bne	:-
+	jsr	blank_ppu_buffer
 
+	clc
 	lda	column_pos
 	cmp	#$40
 	beq	fade_done
+	adc	fade_start
 	and	#$20
 	lsr
 	lsr
@@ -276,6 +234,7 @@ fade_screen:
 	ora	#$20
 	sta	ppu_data + 0
 	lda	column_pos
+	adc	fade_start
 	and	#$1F
 	sta	ppu_data + 1
 	inc	column_pos
@@ -284,6 +243,43 @@ fade_screen:
 fade_done:
 	jsr	start_game
 	jmp	loop
+
+start_title:
+	lda	#$00
+	sta	progress
+	lda	#$00
+	sta	column_pos
+	lda	#%10000000
+	sta	ppu_ctrl
+	jsr	reset_scroll
+	jsr	hide_all_sprites
+	rts
+
+start_game:
+	lda	#$01
+	sta	progress
+	lda	#$20
+	sta	column_pos
+	sta	column_tile
+	lda	#$12
+	sta	column_height
+	lda	#%10000100
+	sta	ppu_ctrl
+	jsr	reset_scroll
+	jsr	copy_sprites_to_oam
+	jsr	move_rooster_sprites
+	rts
+
+start_fade:
+	lda	#$02
+	sta	progress
+	lda	#$00
+	sta	column_pos
+	lda	#%10000100
+	sta	ppu_ctrl
+	jsr	hide_all_sprites
+	jsr	get_fade_start
+	rts
 
 setup_pallete:
 	lda	#$3F
@@ -722,4 +718,26 @@ draw_title_screen:
 	dec	ppu_size
 
 	stx	column_pos
+	rts
+
+blank_ppu_buffer:
+	lda	#30
+	sta	ppu_size
+	lda	#$00
+	ldx	#$00
+:
+	sta	ppu_data + 2, X
+	inx
+	cpx	#30
+	bne	:-
+	rts
+
+get_fade_start:
+	lda	scroll_c
+	ror
+	lda	scroll_x
+	ror
+	lsr
+	lsr
+	sta	fade_start
 	rts
