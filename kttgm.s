@@ -193,6 +193,7 @@ start_title:
 	sta	column_pos
 	lda	#%10000000
 	sta	ppu_ctrl
+	jsr	reset_scroll
 	jsr	hide_all_sprites
 	rts
 
@@ -218,10 +219,10 @@ start_game:
 	sta	column_tile
 	lda	#$12
 	sta	column_height
-	jsr	reset_scroll
 
 	lda	#%10000100
 	sta	ppu_ctrl
+	jsr	reset_scroll
 	jsr	copy_sprites_to_oam
 	jsr	move_rooster_sprites
 	rts
@@ -696,8 +697,6 @@ skip_column_update:
 	rts
 
 draw_title_screen:
-	jsr	reset_scroll
-
 	lda	#%10000000
 	sta	ppu_ctrl
 
