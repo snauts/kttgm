@@ -31,7 +31,7 @@ column_tile:	.res 1
 column_height:	.res 1
 fade_start:	.res 1
 platform_idx:	.res 1
-footing:	.res 1
+footing:	.res 2
 
 var_start:
 rooster_x:	.res 1
@@ -344,14 +344,21 @@ move_rooster_sprites:
 	bne	:-
 	rts
 
-get_footing:
+get_platform_height:
 	clc
-	lda	#4
 	adc	platform_idx
 	and	#$0F
 	tax
 	lda	platforms, X
-	sta	footing
+	rts
+
+get_footing:
+	lda	#4
+	jsr	get_platform_height
+	sta	footing + 0
+	lda	#3
+	jsr	get_platform_height
+	sta	footing + 1
 	rts
 
 move_rooster_position:
