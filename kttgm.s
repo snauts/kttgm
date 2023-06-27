@@ -25,6 +25,8 @@ velocity:	.res 1
 in_the_air:	.res 1
 progress:	.res 1
 column_pos:	.res 1
+column_tile:	.res 1
+column_height:	.res 1
 
 var_start:
 rooster_x:	.res 1
@@ -33,8 +35,6 @@ rooster_frame:	.res 1
 ppu_ctrl:	.res 1
 seed:		.res 1
 ppu_size:	.res 1
-column_tile:	.res 1
-column_height:	.res 1
 platform:	.res 1
 var_end:
 
@@ -46,8 +46,7 @@ oam_buffer:	.res 256
 .segment "RODATA"
 var_data:
 .byte $40, $7C, $C0, $80
-.byte $42, $1E, $20, $12
-.byte $7C
+.byte $42, $1E, $7C
 
 palette:
 .byte $0F, $03, $13, $23
@@ -216,6 +215,11 @@ start_game:
 	sta	progress
 	lda	#$20
 	sta	column_pos
+	sta	column_tile
+	lda	#$12
+	sta	column_height
+	jsr	reset_scroll
+
 	lda	#%10000100
 	sta	ppu_ctrl
 	jsr	copy_sprites_to_oam
@@ -247,6 +251,7 @@ start_fade:
 	sta	column_pos
 	lda	#%10000100
 	sta	ppu_ctrl
+	jsr	hide_all_sprites
 	rts
 
 fade_screen:
@@ -425,6 +430,12 @@ control_rooster:
 	sta	velocity
 	inc	in_the_air
 :
+	rts
+
+reset_scroll:
+	lda	#$00
+	sta	scroll_x
+	sta	scroll_c
 	rts
 
 scroll_screen:
@@ -685,9 +696,7 @@ skip_column_update:
 	rts
 
 draw_title_screen:
-	lda	#$00
-	sta	scroll_x
-	sta	scroll_c
+	jsr	reset_scroll
 
 	lda	#%10000000
 	sta	ppu_ctrl
