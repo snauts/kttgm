@@ -665,8 +665,6 @@ no_eor:
 	rts
 
 fill_next_column:
-	lda	#30
-	sta	ppu_size
 	lda	scroll_x
 	and	#7
 	cmp	#0
