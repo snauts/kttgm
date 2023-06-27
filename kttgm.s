@@ -383,7 +383,7 @@ move_rooster_position:
 :
 	lda	rooster_y
 	cmp	footing + 1
-	bmi	:+
+	bcc	:+
 	lda	#$00
 	sta	in_the_air
 	lda	footing + 1
@@ -507,7 +507,7 @@ fill_grass:
 fill_rocks:
 	jsr	fill_ground_cell
 	cmp	#$80
-	bmi	:+
+	bcc	:+
 	sbc	#$40
 :
 	cpx	#30
@@ -541,7 +541,7 @@ get_attribute:
 	bne	:+
 	ora	#(1 << 6)
 :
-	bmi	:+
+	bcc	:+
 	ora	#(2 << 6)
 :
 	iny
