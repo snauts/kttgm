@@ -109,7 +109,7 @@
   111860.8)
 
 (defun convert-note (note)
-  (floor (- (/ (get-cpu-freq) note) 1)))
+  (round (- (/ (get-cpu-freq) note) 1)))
 
 (defun save-notes ()
   (with-open-file (out "notes.h" :if-exists :supersede :direction :output)
