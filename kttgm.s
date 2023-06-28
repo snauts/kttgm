@@ -98,11 +98,11 @@ title_data:
 title_end:
 
 note_length:
-.byte $10, $10, $10, $10, $10, $10, $10, $10, $20, $10, $10, $30, $10
-.byte $10, $10, $10, $10, $10, $10, $10, $10, $20, $10, $10, $30, $10
-.byte $20, $20, $20, $10, $10, $20, $20, $40
-.byte $20, $20, $20, $10, $10, $20, $20, $40
-.byte $00
+.byte 12, 12, 12, 12, 12, 12, 12, 12, 24, 12, 12, 36, 12
+.byte 12, 12, 12, 12, 12, 12, 12, 12, 24, 12, 12, 36, 12
+.byte 24, 24, 24, 12, 12, 24, 24, 48
+.byte 24, 24, 24, 12, 12, 24, 24, 48
+.byte 0
 
 music1:
 .byte $05, $08, $06, $05, $05, $08, $06, $05, $08, $04, $04, $04, $FF
@@ -904,7 +904,12 @@ play_channel:
 	adc	#16
 	tay
 
-	lda	#$AF
+	lda	music_delay
+	lsr
+	lsr
+	clc
+	adc	#1
+	ora	#$A0
 	sta	SQ1_VOL, X
 	lda	#$08
 	sta	SQ1_SWEEP, X
@@ -914,6 +919,11 @@ play_channel:
 	sta	SQ1_HI, X
 	rts
 
+restart_music:
+	lda	#0
+	sta	music_idx
+	rts
+
 play_sound:
 	lda	music_delay
 	bne	@exit
@@ -921,7 +931,7 @@ play_sound:
 	ldx	music_idx
 	lda	note_length, X
 	bne	:+
-	sta	music_idx
+	jsr	restart_music
 	jmp	:-
 :
 	sta	music_delay
