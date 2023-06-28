@@ -67,19 +67,19 @@ palette:
 .byte $0F, $0F, $0F, $0F
 
 sprites:
-.byte $10, $C0, $05, $08
-.byte $10, $C1, $05, $10
-.byte $00, $D4, $05, $10
-.byte $08, $E4, $05, $10
-.byte $08, $E3, $05, $08
-.byte $10, $F1, $04, $08
-.byte $10, $F2, $04, $10
-.byte $08, $E2, $04, $10
-.byte $08, $E1, $04, $08
-.byte $08, $E0, $04, $00
-.byte $00, $D0, $04, $00
-.byte $00, $D1, $04, $08
-.byte $00, $D2, $04, $10
+.byte $10, $00, $05, $08
+.byte $10, $01, $05, $10
+.byte $00, $21, $05, $10
+.byte $08, $31, $05, $10
+.byte $08, $30, $05, $08
+.byte $10, $33, $04, $08
+.byte $10, $34, $04, $10
+.byte $08, $24, $04, $10
+.byte $08, $23, $04, $08
+.byte $08, $22, $04, $00
+.byte $00, $12, $04, $00
+.byte $00, $13, $04, $08
+.byte $00, $14, $04, $10
 sprites_end:
 
 title_data:
@@ -226,7 +226,7 @@ start_title:
 	sta	progress
 	lda	#$00
 	sta	column_pos
-	lda	#%10000000
+	lda	#%10001000
 	sta	ppu_ctrl
 	jsr	reset_scroll
 	jsr	hide_all_sprites
@@ -256,7 +256,7 @@ start_fade:
 	sta	progress
 	lda	#$00
 	sta	column_pos
-	lda	#%10000100
+	lda	#%10001100
 	sta	ppu_ctrl
 	jsr	hide_all_sprites
 	jsr	get_fade_start
@@ -297,22 +297,23 @@ animate_rooster_sprites:
 	lda	rooster_frame
 	adc	#$02
 	and	#$0F
-	ora	#$C0
 	sta	rooster_frame
 	tax
 
 	lda	in_the_air
 	beq	:+
-	ldx	#$B0
+	ldx	#$10
 :
 	stx	oam_buffer + 1
 	inx
 	stx	oam_buffer + 5
 
-	sec
-	lda	#$D4
-	sbc	in_the_air
-	sta	oam_buffer + 9
+	ldx	#$20
+	lda	in_the_air
+	beq	in_air_beak
+	ldx	#$21
+in_air_beak:
+	stx	oam_buffer + 9
 :
 	rts
 
@@ -737,7 +738,7 @@ skip_column_update:
 	rts
 
 draw_title_screen:
-	lda	#%10000000
+	lda	#%10001000
 	sta	ppu_ctrl
 
 	ldx	column_pos

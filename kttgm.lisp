@@ -4,7 +4,6 @@
 (defun read-ppm ()
   (with-open-file (in "kttgm.ppm" :direction :input)
     (read-line in) ; consume P3
-    (read-line in) ; consume coment
     (let* ((width (read in))
 	   (height (read in))
 	   (picture (make-array (list width height))))
