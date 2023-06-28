@@ -899,9 +899,6 @@ launch_game:
 	rts
 
 play_channel:
-	ldy	music_idx
-	lda	music1, Y
-
 	clc
 	asl
 	adc	#16
@@ -931,9 +928,13 @@ play_sound:
 	and	#$01
 	bne	@mute
 
+	ldy	music_idx
+	lda	music1, Y
 	ldx	#0
 	jsr	play_channel
 
+	ldy	music_idx
+	lda	music2, Y
 	ldx	#4
 	jsr	play_channel
 
