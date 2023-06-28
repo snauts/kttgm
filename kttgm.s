@@ -940,11 +940,9 @@ play_sound:
 
 	jmp	@bail
 @mute:
-	lda	#$00
-	sta	SQ1_LO
-	sta	SQ1_HI
-	sta	SQ2_LO
-	sta	SQ2_HI
+	lda	#$30
+	sta	SQ1_VOL
+	sta	SQ2_VOL
 @bail:
 	inc	music_idx
 @exit:
