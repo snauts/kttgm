@@ -910,16 +910,13 @@ play_sound:
 	sta	music_idx
 	jmp	:-
 :
+	inc	music_idx
 	sta	music_delay
+
 	ldy	music1, X
 	cpy	#$FF
-	bne	:+
-	lda	#$00
-	sta	SQ1_LO
-	sta	SQ1_HI
-	inc	music_idx
-	jmp	@exit
-:
+	beq	@mute
+
 	lda	#$AF
 	sta	SQ1_VOL
 	clc
@@ -932,8 +929,27 @@ play_sound:
 	lda	music_notes + 1, Y
 	sta	SQ1_HI
 
-	inc	music_idx
+	ldy	music2, X
 
+	lda	#$AF
+	sta	SQ2_VOL
+	clc
+	tya
+	asl
+	adc	#32
+	tay
+	lda	music_notes + 0, Y
+	sta	SQ2_LO
+	lda	music_notes + 1, Y
+	sta	SQ2_HI
+
+	jmp	@exit
+@mute:
+	lda	#$00
+	sta	SQ1_LO
+	sta	SQ1_HI
+	sta	SQ2_LO
+	sta	SQ2_HI
 @exit:
 	dec	music_delay
 	rts
