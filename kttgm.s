@@ -34,6 +34,8 @@ fade_start:	.res 1
 platform_idx:	.res 1
 footing_prev:	.res 1
 footing_next:	.res 1
+music_delay:	.res 1
+music_idx:	.res 1
 pause:		.res 1
 
 var_start:
@@ -95,6 +97,27 @@ title_data:
 .byte $00
 title_end:
 
+note_length:
+.byte $10, $10, $10, $10, $10, $10, $10, $10, $20, $10, $10, $30, $10
+.byte $10, $10, $10, $10, $10, $10, $10, $10, $20, $10, $10, $30, $10
+.byte $20, $20, $20, $10, $10, $20, $20, $40
+.byte $20, $20, $20, $10, $10, $20, $20, $40
+.byte $00
+
+music1:
+.byte $05, $08, $06, $05, $05, $08, $06, $05, $08, $04, $04, $04, $FF
+.byte $04, $06, $05, $04, $04, $06, $05, $04, $05, $03, $03, $03, $FF
+.byte $06, $09, $0B, $0A, $09, $09, $08, $08
+.byte $09, $08, $06, $05, $04, $05, $04, $03
+music2:
+.byte $02, $04, $03, $02, $02, $04, $03, $02, $04, $01, $01, $01, $FF
+.byte $01, $03, $02, $01, $01, $03, $02, $01, $02, $00, $00, $00, $FF
+.byte $03, $05, $08, $07, $05, $05, $04, $04
+.byte $05, $04, $03, $02, $01, $02, $01, $00
+
+music_notes:
+.include "notes.h"
+
 .segment "CODE"
 
 PPUCTRL		= $2000
@@ -105,8 +128,17 @@ OAMDATA		= $2004
 PPUSCROLL	= $2005
 PPUADDR		= $2006
 PPUDATA		= $2007
+SQ1_VOL		= $4000
+SQ1_SWEEP	= $4001
+SQ1_LO		= $4002
+SQ1_HI		= $4003
+SQ2_VOL		= $4004
+SQ2_SWEEP	= $4005
+SQ2_LO		= $4006
+SQ2_HI		= $4007
 DMC_FREQ	= $4010
 OAMDMA		= $4014
+SND_CHN		= $4015
 JOY1		= $4016
 JOY2		= $4017
 
@@ -171,6 +203,10 @@ rst:
 	stx	PPUCTRL
 	stx	PPUMASK
 	stx	DMC_FREQ
+	stx	SQ1_SWEEP
+	stx	SQ2_SWEEP
+	lda	#%00000011
+	sta	SND_CHN
 
 	;; Wait for PPU to stabilize
 	jsr	wait_vblank
@@ -189,6 +225,7 @@ spin:	cmp	counter
 	beq 	spin
 
 	jsr	check_button
+	jsr	play_sound
 
 	lda	progress
 	cmp	#00
@@ -861,4 +898,42 @@ launch_game:
 	beq	:+
 	jsr	start_fade
 :
+	rts
+
+play_sound:
+	cmp	music_delay
+	bne	@exit
+:
+	ldx	music_idx
+	lda	note_length, X
+	bne	:+
+	sta	music_idx
+	jmp	:-
+:
+	sta	music_delay
+	ldy	music1, X
+	cpy	#$FF
+	bne	:+
+	lda	#$00
+	sta	SQ1_LO
+	sta	SQ1_HI
+	inc	music_idx
+	jmp	@exit
+:
+	lda	#$AF
+	sta	SQ1_VOL
+	clc
+	tya
+	asl
+	adc	#16
+	tay
+	lda	music_notes + 0, Y
+	sta	SQ1_LO
+	lda	music_notes + 1, Y
+	sta	SQ1_HI
+
+	inc	music_idx
+
+@exit:
+	dec	music_delay
 	rts
