@@ -203,6 +203,7 @@ rst:
 	stx	PPUCTRL
 	stx	PPUMASK
 	stx	DMC_FREQ
+	ldx	#$08
 	stx	SQ1_SWEEP
 	stx	SQ2_SWEEP
 	lda	#%00000011
