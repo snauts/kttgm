@@ -98,8 +98,8 @@ title_data:
 title_end:
 
 note_length:
-.byte $10, $10, $10, $10, $10, $10, $10, $10, $20, $10, $10, $30, $10
-.byte $10, $10, $10, $10, $10, $10, $10, $10, $20, $10, $10, $30, $10
+.byte $10, $10, $10, $10, $10, $10, $10, $10, $20, $10, $10, $30, $11
+.byte $10, $10, $10, $10, $10, $10, $10, $10, $20, $10, $10, $30, $11
 .byte $20, $20, $20, $10, $10, $20, $20, $40
 .byte $20, $20, $20, $10, $10, $20, $20, $40
 .byte $00
@@ -203,9 +203,6 @@ rst:
 	stx	PPUCTRL
 	stx	PPUMASK
 	stx	DMC_FREQ
-	ldx	#$08
-	stx	SQ1_SWEEP
-	stx	SQ2_SWEEP
 	lda	#%00000011
 	sta	SND_CHN
 
@@ -901,6 +898,25 @@ launch_game:
 :
 	rts
 
+play_channel:
+	ldy	music_idx
+	lda	music1, Y
+
+	clc
+	asl
+	adc	#16
+	tay
+
+	lda	#$AF
+	sta	SQ1_VOL, X
+	lda	#$08
+	sta	SQ1_SWEEP, X
+	lda	music_notes + 0, Y
+	sta	SQ1_LO, X
+	lda	music_notes + 1, Y
+	sta	SQ1_HI, X
+	rts
+
 play_sound:
 	cmp	music_delay
 	bne	@exit
@@ -911,46 +927,25 @@ play_sound:
 	sta	music_idx
 	jmp	:-
 :
-	inc	music_idx
 	sta	music_delay
+	and	#$01
+	bne	@mute
 
-	ldy	music1, X
-	cpy	#$FF
-	beq	@mute
+	ldx	#0
+	jsr	play_channel
 
-	lda	#$AF
-	sta	SQ1_VOL
-	clc
-	tya
-	asl
-	adc	#16
-	tay
-	lda	music_notes + 0, Y
-	sta	SQ1_LO
-	lda	music_notes + 1, Y
-	sta	SQ1_HI
+	ldx	#4
+	jsr	play_channel
 
-	ldy	music2, X
-
-	lda	#$AF
-	sta	SQ2_VOL
-	clc
-	tya
-	asl
-	adc	#32
-	tay
-	lda	music_notes + 0, Y
-	sta	SQ2_LO
-	lda	music_notes + 1, Y
-	sta	SQ2_HI
-
-	jmp	@exit
+	jmp	@bail
 @mute:
 	lda	#$00
 	sta	SQ1_LO
 	sta	SQ1_HI
 	sta	SQ2_LO
 	sta	SQ2_HI
+@bail:
+	inc	music_idx
 @exit:
 	dec	music_delay
 	rts
