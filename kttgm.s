@@ -899,6 +899,12 @@ launch_game:
 	rts
 
 play_channel:
+	cmp	#$FF
+	bne	:+
+	lda	#$30
+	sta	SQ1_VOL, X
+	rts
+:
 	clc
 	asl
 	adc	#16
@@ -938,8 +944,6 @@ play_sound:
 
 	ldy	music_idx
 	lda	music1, Y
-	cmp	#$FF
-	beq	@mute
 	ldx	#0
 	jsr	play_channel
 
@@ -948,12 +952,6 @@ play_sound:
 	ldx	#4
 	jsr	play_channel
 
-	jmp	@bail
-@mute:
-	lda	#$30
-	sta	SQ1_VOL
-	sta	SQ2_VOL
-@bail:
 	inc	music_idx
 @exit:
 	dec	music_delay
