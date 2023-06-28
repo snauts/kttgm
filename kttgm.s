@@ -67,13 +67,13 @@ palette:
 .byte $0F, $0F, $0F, $0F
 
 sprites:
-.byte $10, $00, $05, $08
-.byte $10, $01, $05, $10
-.byte $00, $20, $05, $10
+.byte $10, $10, $05, $08
+.byte $10, $11, $05, $10
+.byte $00, $21, $05, $10
+.byte $08, $15, $05, $00
+.byte $00, $15, $45, $08
 .byte $08, $31, $05, $10
 .byte $08, $30, $05, $08
-.byte $08, $32, $05, $00
-.byte $00, $32, $45, $08
 .byte $10, $33, $04, $08
 .byte $10, $34, $04, $10
 .byte $08, $24, $04, $10
@@ -214,7 +214,6 @@ rooster_game:
 	jsr	fill_next_column
 	jsr	scroll_screen
 	jsr	move_rooster_position
-	jsr	animate_rooster_sprites
 	jsr	move_rooster_sprites
 	jmp	loop
 
@@ -293,30 +292,30 @@ copy_sprites_to_oam:
 animate_rooster_sprites:
 	lda	counter
 	and	#$03
-	bne	:++
+	bne	:+
 
 	clc
 	lda	rooster_frame
 	adc	#$02
 	and	#$0F
 	sta	rooster_frame
-	tax
+:
+	ldx	rooster_frame
+	ldy	#$20
 
 	lda	in_the_air
 	beq	:+
 	ldx	#$10
+	ldy	#$21
 :
 	stx	oam_buffer + 1
 	inx
 	stx	oam_buffer + 5
+	sty	oam_buffer + 9
 
-	ldx	#$20
-	lda	in_the_air
-	beq	in_air_beak
-	ldx	#$21
-in_air_beak:
-	stx	oam_buffer + 9
-:
+	lda	#$32
+	sta	oam_buffer + 13
+	sta	oam_buffer + 17
 	rts
 
 wait_vblank:
@@ -353,6 +352,9 @@ move_rooster_sprites:
 	inx
 	cpx	#(sprites_end - sprites)
 	bne	:-
+
+	jsr     animate_rooster_sprites
+
 	rts
 
 get_platform_height:
