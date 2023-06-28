@@ -915,7 +915,7 @@ play_channel:
 	rts
 
 play_sound:
-	cmp	music_delay
+	lda	music_delay
 	bne	@exit
 :
 	ldx	music_idx
