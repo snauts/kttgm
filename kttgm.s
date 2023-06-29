@@ -954,6 +954,7 @@ launch_game:
 	lda	button_last
 	and	#BUTTON_START
 	beq	:+
+	jsr	restart_music
 	jsr	start_fade
 :
 	rts
@@ -991,6 +992,7 @@ play_channel:
 restart_music:
 	lda	#0
 	sta	music_idx
+	sta	music_delay
 
 	clc
 	lda	#$10
