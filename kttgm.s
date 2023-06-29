@@ -292,7 +292,11 @@ start_game:
 	lda	#$01
 	sta	progress
 	lda	#$00
+	sta	crashed
+	sta	rooster_y
 	sta	column_pos
+	lda	#$02
+	sta	in_the_air
 	lda	#$20
 	sta	column_tile
 	lda	#$12
@@ -587,8 +591,9 @@ crash_slide:
 	cmp	footing_prev
 	bcs	:+
 	inc	rooster_y
-:
 	rts
+:
+	jmp	start_fade
 
 check_button:
 	lda	#$01
