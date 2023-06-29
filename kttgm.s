@@ -58,8 +58,8 @@ var_data:
 .byte $38, $7C, $C0, $80
 .byte $42, $1E
 ;; music_cfg
-.byte $10, $00, $00, $00
-.byte $20, $00, $00, $00
+.byte $10, $A0, $00, $00
+.byte $20, $A0, $00, $00
 
 palette:
 .byte $0F, $03, $13, $23
@@ -919,7 +919,7 @@ play_channel:
 	lsr
 	clc
 	adc	#1
-	ora	#$A0
+	ora	music_cfg + 1, X
 	sta	SQ1_VOL, X
 	lda	#$08
 	sta	SQ1_SWEEP, X
@@ -929,9 +929,26 @@ play_channel:
 	sta	SQ1_HI, X
 	rts
 
+randomize_octave:
+	jsr	get_random_number
+	and	#3
+	clc
+	asl
+	asl
+	asl
+	asl
+	sta	music_cfg + 0, X
+	rts
+
 restart_music:
 	lda	#0
 	sta	music_idx
+
+	ldx	#0
+	jsr	randomize_octave
+	ldx	#4
+	jsr	randomize_octave
+
 	rts
 
 play_sound:
