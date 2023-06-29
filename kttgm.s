@@ -33,6 +33,7 @@ platform_idx:	.res 1
 footing_prev:	.res 1
 footing_next:	.res 1
 music_delay:	.res 1
+rooster_py:	.res 1
 music_idx:	.res 1
 crashed:	.res 1
 pause:		.res 1
@@ -57,7 +58,7 @@ oam_buffer:	.res 256
 .segment "RODATA"
 var_data:
 .byte $38, $00, $C0, $80
-.byte $42, $1E, $02, $01
+.byte $DD, $1E, $02, $01
 ;; music_cfg
 .byte $10, $01, $A0, $08
 .byte $30, $03, $60, $08
@@ -159,7 +160,7 @@ BUTTON_START	= %00001000
 VELOCITY	= 252
 GRAVITATION	= 4
 FALLING		= 12
-BUMPING		= 2
+BUMPING		= 0
 
 SPRITE_BLOCK	= (sprites_end - sprites)
 MAIN_SPRITES	= SPRITE_BLOCK / 4
@@ -498,7 +499,7 @@ get_footing:
 	lda	scroll_x
 	and	#$0F
 	cmp	#BUMPING
-	bcc	:+
+	beq	:+
 
 	lda	footing_next
 	sta	footing_prev
@@ -516,6 +517,10 @@ get_footing:
 
 move_rooster_position:
 	jsr	get_footing
+
+	lda	rooster_y
+	sta	rooster_py
+
 	lda	in_the_air
 	beq	snap_to_platform
 
@@ -535,6 +540,12 @@ snap_to_platform:
 	lda	rooster_y
 	cmp	footing_next
 	bcc	consider_falling
+
+	lda	footing_next
+	cmp	rooster_py
+	bcs	:+
+	jmp	start_crash
+:
 	lda	#$00
 	sta	in_the_air
 	lda	footing_next
