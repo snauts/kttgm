@@ -45,6 +45,7 @@ rooster_frame:	.res 1
 ppu_ctrl:	.res 1
 seed:		.res 1
 ppu_size:	.res 1
+music_cfg:	.res 8
 var_end:
 
 .segment "BSS"
@@ -56,6 +57,9 @@ oam_buffer:	.res 256
 var_data:
 .byte $38, $7C, $C0, $80
 .byte $42, $1E
+;; music_cfg
+.byte $10, $00, $00, $00
+.byte $20, $00, $00, $00
 
 palette:
 .byte $0F, $03, $13, $23
@@ -907,7 +911,7 @@ play_channel:
 :
 	clc
 	asl
-	adc	#16
+	adc	music_cfg + 0, X
 	tay
 
 	lda	music_delay
