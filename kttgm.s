@@ -931,6 +931,8 @@ restart_music:
 	rts
 
 play_sound:
+	lda	progress
+	beq	@pause_music
 	lda	pause
 	bne	@pause_music
 	lda	music_delay
