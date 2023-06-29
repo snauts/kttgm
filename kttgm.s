@@ -32,6 +32,7 @@ fade_start:	.res 1
 platform_idx:	.res 1
 footing_prev:	.res 1
 footing_next:	.res 1
+footing_snap:	.res 1
 music_delay:	.res 1
 rooster_py:	.res 1
 music_idx:	.res 1
@@ -521,6 +522,19 @@ get_footing:
 	lda	platforms, X
 	sta	footing_next
 :
+	lda	scroll_x
+	and	#$0F
+	cmp	#FALLING
+	bcs	:+
+	lda	footing_next
+	cmp	footing_prev
+	bcc	:+
+	lda	footing_prev
+	sta	footing_snap
+	rts
+:
+	lda	footing_next
+	sta	footing_snap
 	rts
 
 move_rooster_position:
@@ -557,17 +571,17 @@ adjust_vertical_pos:
 
 snap_to_platform:
 	lda	rooster_y
-	cmp	footing_next
+	cmp	footing_snap
 	bcc	consider_falling
 
-	lda	footing_next
+	lda	footing_snap
 	cmp	rooster_py
 	bcs	:+
 	jmp	start_crash
 :
 	lda	#$00
 	sta	in_the_air
-	lda	footing_next
+	lda	footing_snap
 	sta	rooster_y
 
 consider_falling:
