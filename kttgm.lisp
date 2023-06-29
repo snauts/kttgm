@@ -91,6 +91,28 @@
 				   :direction :output)
     (save-picture out (read-ppm))))
 
+(defparameter *tempo* 12)
+
+(defparameter *note-values*
+  '((1 1 1 1 1 1 1 1 2 1 1 3 1)
+    (1 1 1 1 1 1 1 1 2 1 1 3 1)
+    (2 2 2 1 1 2 2 4)
+    (2 2 2 1 1 2 2 4)
+    (0)))
+
+(defun value-to-ticks (value)
+  (* value *tempo*))
+
+(defun print-asm-hex (out pad values)
+  (format out (concatenate 'string "~{$~" pad ",'0X~^,~}") values))
+
+(defun save-note-values (out)
+  (format out "note_length:~%")
+  (dolist (parts *note-values*)
+    (format out ".byte ")
+    (print-asm-hex out "2" (mapcar #'value-to-ticks parts))
+    (format out "~%")))
+
 (defparameter *notes*
 '(;; C     D     E     F     G     A     Bb    B
 ; (16.35 18.35 20.60 21.83 24.50 27.50 29.14 30.87) ; 0
@@ -110,12 +132,17 @@
 (defun convert-note (note)
   (round (- (/ (get-cpu-freq) note) 1)))
 
+(defun save-frequencies (out)
+  (format out "music_notes:~%")
+  (dolist (octave *notes*)
+    (format out ".word ")
+    (print-asm-hex out "4" (mapcar #'convert-note octave))
+    (format out "~%")))
+
 (defun save-notes ()
   (with-open-file (out "notes.h" :if-exists :supersede :direction :output)
-    (dolist (octave *notes*)
-      (format out ".word ")
-      (format out "~{$~4,'0X~^,~}" (mapcar #'convert-note octave))
-      (format out "~%"))))
+    (save-note-values out)
+    (save-frequencies out)))
 
 (save-sprites)
 (save-notes)
