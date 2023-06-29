@@ -537,6 +537,17 @@ adjust_vertical_pos:
 	adc	rooster_y
 	sta	rooster_y
 
+	lda	velocity
+	cmp	#$80
+	bcc	snap_to_platform
+
+	lda	rooster_py
+	cmp	rooster_y
+	bcs	snap_to_platform
+
+	lda	rooster_py
+	sta	rooster_y
+
 snap_to_platform:
 	lda	rooster_y
 	cmp	footing_next
