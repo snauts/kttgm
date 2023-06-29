@@ -931,6 +931,8 @@ restart_music:
 	rts
 
 play_sound:
+	lda	pause
+	bne	@pause_music
 	lda	music_delay
 	bne	@exit
 :
@@ -955,4 +957,10 @@ play_sound:
 	inc	music_idx
 @exit:
 	dec	music_delay
+	rts
+
+@pause_music:
+	lda	#$30
+	sta	SQ1_VOL
+	sta	SQ2_VOL
 	rts
