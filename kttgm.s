@@ -295,7 +295,9 @@ start_title:
 start_game:
 	lda	#$01
 	sta	progress
+	sta	gravity
 	lda	#$00
+	sta	velocity
 	sta	rooster_y
 	sta	column_pos
 	lda	#$02
