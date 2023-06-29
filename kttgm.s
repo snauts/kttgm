@@ -881,9 +881,9 @@ fill_next_column:
 generate_new_block:
 	jsr	get_random_number
 	clc
-	and	#$07
+	and	#$03
 	asl
-	adc	#$08
+	adc	#$0A
 	sta	column_height
 	jsr	get_random_number
 	and	#$04
