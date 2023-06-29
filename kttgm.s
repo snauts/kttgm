@@ -17,7 +17,7 @@
 ppu_data:	.res 32
 platforms:	.res 16
 attributes:	.res 12
-counter:	.res 1
+counter:	.res 2
 scroll_x:	.res 1
 scroll_c:	.res 1
 button_down:	.res 1
@@ -173,8 +173,10 @@ nmi:
 	tya
 	pha
 
-	inc	counter
-
+	inc	counter + 0
+	bne	:+
+	inc	counter + 1
+:
 	jsr	update_ppu
 
 	ldx	#%00000000
