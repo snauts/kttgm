@@ -159,6 +159,7 @@ BUTTON_START	= %00001000
 
 VELOCITY	= 252
 GRAVITATION	= 4
+NEXT_IDX	= 5
 FALLING		= 12
 BUMPING		= 0
 
@@ -499,13 +500,13 @@ get_footing:
 	lda	scroll_x
 	and	#$0F
 	cmp	#BUMPING
-	beq	:+
+	bne	:+
 
 	lda	footing_next
 	sta	footing_prev
 
 	clc
-	lda	#4
+	lda	#NEXT_IDX
 	adc	platform_idx
 	and	#$0F
 	tax
@@ -558,16 +559,13 @@ consider_falling:
 	lda	scroll_x
 	and	#$0F
 	cmp	#FALLING
-	bcs	:+
+	bne	exit_move_rooster
 
-	lda	rooster_y
-	cmp	footing_prev
-	bcs	exit_move_rooster
-:
 	lda	rooster_y
 	cmp	footing_next
 	bcs	exit_move_rooster
-	lda	#$00
+
+	lda	#$01
 	jmp	jump_rooster
 
 exit_move_rooster:
