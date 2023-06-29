@@ -425,7 +425,7 @@ use_crash_sprites:
 	iny
 	iny
 	iny
-	cpx	MAIN_SPRITES
+	cpx	#MAIN_SPRITES
 	bne	:-
 	rts
 
