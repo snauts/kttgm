@@ -242,6 +242,8 @@ spin:	cmp	counter
 	beq	prepare_game
 	cmp	#02
 	beq	rooster_game
+	cmp	#03
+	beq	rooster_crash
 
 	jmp	fade_screen
 
@@ -260,6 +262,11 @@ rooster_game:
 	jsr	scroll_screen
 	jsr	move_rooster_position
 	jsr	move_rooster_sprites
+	jmp	loop
+
+rooster_crash:
+	jsr	use_crash_sprites
+	jsr	adjust_sprite_positions
 	jmp	loop
 
 fade_screen:
@@ -294,6 +301,12 @@ start_rooster:
 	lda	#$02
 	sta	progress
 	jsr	move_rooster_sprites
+	rts
+
+start_crash:
+	lda	#$03
+	sta	progress
+	inc	crashed
 	rts
 
 start_fade:
@@ -430,9 +443,6 @@ use_crash_sprites:
 	rts
 
 prepare_rooster_sprites:
-	ldx	crashed
-	bne	use_crash_sprites
-
 	lda	#0
 	ldx	in_the_air
 	cpx	#2
@@ -453,9 +463,7 @@ prepare_rooster_sprites:
 :
 	rts
 
-move_rooster_sprites:
-	jsr	prepare_rooster_sprites
-
+adjust_sprite_positions:
 	ldx	#0
 :
 	clc
@@ -473,7 +481,11 @@ move_rooster_sprites:
 	inx
 	cpx	#SPRITE_BLOCK
 	bne	:-
+	rts
 
+move_rooster_sprites:
+	jsr	prepare_rooster_sprites
+	jsr	adjust_sprite_positions
 	jsr     animate_rooster_sprites
 
 	rts
