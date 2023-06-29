@@ -36,6 +36,7 @@ footing_prev:	.res 1
 footing_next:	.res 1
 music_delay:	.res 1
 music_idx:	.res 1
+sprite_set:	.res 1
 pause:		.res 1
 
 var_start:
@@ -153,6 +154,8 @@ VELOCITY	= 252
 GRAVITATION	= 4
 FALLING		= 12
 BUMPING		= 4
+
+SPRITE_BLOCK	= (sprites_end - sprites)
 
 nmi:
 	pha
@@ -283,7 +286,6 @@ start_game:
 start_rooster:
 	lda	#$02
 	sta	progress
-	jsr	copy_sprites_to_oam
 	jsr	move_rooster_sprites
 	rts
 
@@ -316,11 +318,13 @@ setup_pallete:
 
 copy_sprites_to_oam:
 	ldx	#0
+	ldy	sprite_set
 :
-	lda	sprites, x
+	lda	sprites, y
 	sta	oam_buffer, x
 	inx
-	cpx	#(sprites_end - sprites)
+	iny
+	cpx	#SPRITE_BLOCK
 	bne	:-
 	rts
 
@@ -370,14 +374,16 @@ init_variables:
 	rts
 
 move_rooster_sprites:
+	jsr	copy_sprites_to_oam
+
 	ldx	#0
 :
 	clc
-	lda	sprites + OAM_X, x
+	lda	oam_buffer + OAM_X, x
 	adc	rooster_x
 	sta	oam_buffer + OAM_X, x
 
-	lda	sprites + OAM_Y, x
+	lda	oam_buffer + OAM_Y, x
 	adc	rooster_y
 	sta	oam_buffer + OAM_Y, x
 
@@ -385,7 +391,7 @@ move_rooster_sprites:
 	inx
 	inx
 	inx
-	cpx	#(sprites_end - sprites)
+	cpx	#SPRITE_BLOCK
 	bne	:-
 
 	jsr     animate_rooster_sprites
