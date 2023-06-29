@@ -105,6 +105,10 @@ sprites_end:
 .byte $00, $17, $04, $08
 .byte $00, $18, $04, $10
 
+crash_sprites:
+.byte $3D, $3E, $1D, $32, $32, $2E, $2D
+.byte $3B, $3C, $2C, $2B, $2A, $1A, $1B, $1C
+
 title_data:
 .byte $05, $23, $DB, $05, $A5, $A5
 .byte $06, $23, $D2, $A0, $A0, $A0, $50
