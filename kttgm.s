@@ -522,19 +522,16 @@ get_footing:
 	lda	platforms, X
 	sta	footing_next
 :
+	ldx	footing_next
 	lda	scroll_x
 	and	#$0F
 	cmp	#FALLING
 	bcs	:+
-	lda	footing_next
-	cmp	footing_prev
+	cpx	footing_prev
 	bcc	:+
-	lda	footing_prev
-	sta	footing_snap
-	rts
+	ldx	footing_prev
 :
-	lda	footing_next
-	sta	footing_snap
+	stx	footing_snap
 	rts
 
 move_rooster_position:
