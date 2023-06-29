@@ -883,6 +883,15 @@ launch_game:
 :
 	rts
 
+produce_vol:
+	lda	music_delay
+	lsr
+	lsr
+	clc
+	adc	music_cfg + 1, X
+	ora	music_cfg + 2, X
+	rts
+
 play_channel:
 	bit	rest_bit
 	beq	:+
@@ -894,12 +903,7 @@ play_channel:
 	adc	music_cfg + 0, X
 	tay
 
-	lda	music_delay
-	lsr
-	lsr
-	clc
-	adc	music_cfg + 1, X
-	ora	music_cfg + 2, X
+	jsr	produce_vol
 	sta	SQ1_VOL, X
 	lda	music_cfg + 3, X
 	sta	SQ1_SWEEP, X
@@ -909,26 +913,21 @@ play_channel:
 	sta	SQ1_HI, X
 	rts
 
-randomize_octave:
-	jsr	get_random_number
-	and	#3
-	clc
-	asl
-	asl
-	asl
-	asl
-	sta	music_cfg + 0, X
-	rts
-
 restart_music:
 	lda	#0
 	sta	music_idx
 
-	ldx	#0
-	jsr	randomize_octave
-	ldx	#4
-	jsr	randomize_octave
-
+	clc
+	lda	#$10
+	adc	music_cfg + 0
+	and	#$30
+	sta	music_cfg + 0
+	bne	:+
+	lda	#$10
+	adc	music_cfg + 4
+	and	#$30
+	sta	music_cfg + 4
+:
 	rts
 
 play_sound:
