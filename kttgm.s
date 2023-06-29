@@ -58,8 +58,8 @@ var_data:
 .byte $38, $7C, $C0, $80
 .byte $42, $1E
 ;; music_cfg
-.byte $10, $A0, $00, $00
-.byte $20, $A0, $00, $00
+.byte $10, $01, $A0, $08
+.byte $30, $03, $20, $08
 
 palette:
 .byte $0F, $03, $13, $23
@@ -918,10 +918,10 @@ play_channel:
 	lsr
 	lsr
 	clc
-	adc	#1
-	ora	music_cfg + 1, X
+	adc	music_cfg + 1, X
+	ora	music_cfg + 2, X
 	sta	SQ1_VOL, X
-	lda	#$08
+	lda	music_cfg + 3, X
 	sta	SQ1_SWEEP, X
 	lda	music_notes + 0, Y
 	sta	SQ1_LO, X
