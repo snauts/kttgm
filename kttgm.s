@@ -59,7 +59,7 @@ var_data:
 .byte $42, $1E
 ;; music_cfg
 .byte $10, $01, $A0, $08
-.byte $30, $03, $20, $08
+.byte $30, $03, $60, $08
 
 palette:
 .byte $0F, $03, $13, $23
@@ -884,14 +884,13 @@ launch_game:
 	rts
 
 play_channel:
-	cmp	#$F
-	bne	:+
+	bit	rest_bit
+	beq	:+
 	lda	#$30
 	sta	SQ1_VOL, X
 	rts
 :
 	clc
-	asl
 	adc	music_cfg + 0, X
 	tay
 

@@ -125,12 +125,21 @@
     (#x3 #x5 #x8 #x7 #x5 #x5 #x4 #x4)
     (#x5 #x4 #x3 #x2 #x1 #x2 #x1 #x0)))
 
+(defparameter *rest-value* #b10000000)
+
+(defun preprocess (note)
+  (if (= #xF note) *rest-value* (* 2 note)))
+
 (defun save-music (out label notes)
   (format out "~A:~%" label)
   (dolist (parts notes)
     (format out ".byte ")
-    (print-asm-hex out "2" parts)
+    (print-asm-hex out "2" (mapcar #'preprocess parts))
     (format out "~%")))
+
+(defun save-rest-bit-variable (out)
+  (format out "rest_bit:~%")
+  (format out ".byte $~X~%" *rest-value*))
 
 (defparameter *notes*
 '(;; C     D     E     F     G     A     Bb    B
@@ -141,8 +150,8 @@
   (261.6 293.7 329.6 349.2 392.0 440.0 466.2 493.9) ; 4
   (523.3 587.3 659.3 698.5 784.0 880.0 932.3 987.8) ; 5
   (1047. 1175. 1319. 1397. 1568. 1760. 1865. 1976.) ; 6
-  (2093. 2349. 2637. 2794. 3136. 3520. 3729. 3951.) ; 7
-  (4186. 4699. 5274. 5588. 6272. 7040. 7459. 7902.) ; 8
+; (2093. 2349. 2637. 2794. 3136. 3520. 3729. 3951.) ; 7
+; (4186. 4699. 5274. 5588. 6272. 7040. 7459. 7902.) ; 8
   ))
 
 (defun get-cpu-freq ()
@@ -160,6 +169,7 @@
 
 (defun save-notes ()
   (with-open-file (out "notes.h" :if-exists :supersede :direction :output)
+    (save-rest-bit-variable out)
     (save-music out "music1" *music1*)
     (save-music out "music2" *music2*)
     (save-note-values out)
