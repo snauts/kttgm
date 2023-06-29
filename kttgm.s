@@ -270,6 +270,7 @@ rooster_crash:
 	jsr	crash_slide
 	jsr	use_crash_sprites
 	jsr	adjust_sprite_positions
+	jsr	clean_up_crash
 	jmp	loop
 
 fade_screen:
@@ -292,7 +293,6 @@ start_game:
 	lda	#$01
 	sta	progress
 	lda	#$00
-	sta	crashed
 	sta	rooster_y
 	sta	column_pos
 	lda	#$02
@@ -316,7 +316,8 @@ start_rooster:
 start_crash:
 	lda	#$03
 	sta	progress
-	inc	crashed
+	lda	#30
+	sta	crashed
 	rts
 
 start_fade:
@@ -589,11 +590,19 @@ exit_move_rooster:
 crash_slide:
 	lda	rooster_y
 	cmp	footing_prev
-	bcs	:+
+	bcs	@exit
 	inc	rooster_y
 	rts
-:
+@exit:
+	dec	crashed
+	rts
+
+clean_up_crash:
+	lda	crashed
+	bne	:+
 	jmp	start_fade
+:
+	rts
 
 check_button:
 	lda	#$01
