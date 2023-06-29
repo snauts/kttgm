@@ -328,6 +328,11 @@ copy_sprites_to_oam:
 	rts
 
 animate_rooster_sprites:
+	lda	in_the_air
+	cmp	#2
+	bne	:+
+	rts
+:
 	lda	counter
 	and	#$03
 	bne	:+
@@ -397,22 +402,27 @@ flip_rooster_sprites:
 	rts
 
 prepare_rooster_sprites:
+	lda	#0
+	ldx	in_the_air
+	cpx	#2
+	bne	:+
+	lda	counter
+:
 	pha
 	ldy	#$00
-	and	#$01
+	and	#$02
 	beq	:+
 	ldy	#SPRITE_BLOCK
 :
 	jsr	copy_sprites_to_oam
 	pla
-	and	#$02
+	and	#$04
 	beq	:+
 	jsr	flip_rooster_sprites
 :
 	rts
 
 move_rooster_sprites:
-	lda	#0
 	jsr	prepare_rooster_sprites
 
 	ldx	#0
