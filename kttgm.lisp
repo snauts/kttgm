@@ -113,6 +113,25 @@
     (print-asm-hex out "2" (mapcar #'value-to-ticks parts))
     (format out "~%")))
 
+(defparameter *music1*
+  '((#x5 #x8 #x6 #x5 #x5 #x8 #x6 #x5 #x8 #x4 #x4 #x4 #xF)
+    (#x4 #x6 #x5 #x4 #x4 #x6 #x5 #x4 #x5 #x3 #x3 #x3 #xF)
+    (#x6 #x9 #xB #xA #x9 #x9 #x8 #x8)
+    (#x9 #x8 #x6 #x5 #x4 #x5 #x4 #x3)))
+
+(defparameter *music2*
+  '((#x2 #x4 #x3 #x2 #x2 #x4 #x3 #x2 #x4 #x1 #x1 #x1 #xF)
+    (#x1 #x3 #x2 #x1 #x1 #x3 #x2 #x1 #x2 #x0 #x0 #x0 #xF)
+    (#x3 #x5 #x8 #x7 #x5 #x5 #x4 #x4)
+    (#x5 #x4 #x3 #x2 #x1 #x2 #x1 #x0)))
+
+(defun save-music (out label notes)
+  (format out "~A:~%" label)
+  (dolist (parts notes)
+    (format out ".byte ")
+    (print-asm-hex out "2" parts)
+    (format out "~%")))
+
 (defparameter *notes*
 '(;; C     D     E     F     G     A     Bb    B
 ; (16.35 18.35 20.60 21.83 24.50 27.50 29.14 30.87) ; 0
@@ -141,6 +160,8 @@
 
 (defun save-notes ()
   (with-open-file (out "notes.h" :if-exists :supersede :direction :output)
+    (save-music out "music1" *music1*)
+    (save-music out "music2" *music2*)
     (save-note-values out)
     (save-frequencies out)))
 
