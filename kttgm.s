@@ -34,6 +34,7 @@ footing_prev:	.res 1
 footing_next:	.res 1
 music_delay:	.res 1
 music_idx:	.res 1
+crashed:	.res 1
 pause:		.res 1
 
 var_start:
@@ -149,6 +150,7 @@ JOY2		= $4017
 OAM_Y		= $00
 OAM_X		= $03
 OAM_A		= $02
+OAM_T		= $01
 
 BUTTON_A	= %00000001
 BUTTON_B	= %00000010
@@ -160,6 +162,7 @@ FALLING		= 12
 BUMPING		= 4
 
 SPRITE_BLOCK	= (sprites_end - sprites)
+MAIN_SPRITES	= SPRITE_BLOCK / 4
 
 nmi:
 	pha
@@ -334,9 +337,11 @@ copy_sprites_to_oam:
 animate_rooster_sprites:
 	lda	in_the_air
 	cmp	#2
-	bne	:+
-	rts
-:
+	beq	@exit
+
+	lda	crashed
+	bne	@exit
+
 	lda	counter
 	and	#$03
 	bne	:+
@@ -363,6 +368,7 @@ animate_rooster_sprites:
 	lda	#$32
 	sta	oam_buffer + 13
 	sta	oam_buffer + 17
+@exit:
 	rts
 
 wait_vblank:
@@ -405,7 +411,28 @@ flip_rooster_sprites:
 	bne	:-
 	rts
 
+use_crash_sprites:
+	ldy	#$00
+	jsr	copy_sprites_to_oam
+
+	ldx	#$00
+	ldy	#$00
+:
+	lda	crash_sprites, x
+	sta	oam_buffer + OAM_T, y
+	inx
+	iny
+	iny
+	iny
+	iny
+	cpx	MAIN_SPRITES
+	bne	:-
+	rts
+
 prepare_rooster_sprites:
+	ldx	crashed
+	bne	use_crash_sprites
+
 	lda	#0
 	ldx	in_the_air
 	cpx	#2
