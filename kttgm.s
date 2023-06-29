@@ -894,7 +894,7 @@ generate_new_block:
 	clc
 	and	#$03
 	asl
-	adc	#$0A
+	adc	#$0C
 	sta	column_height
 	jsr	get_random_number
 	and	#$04
