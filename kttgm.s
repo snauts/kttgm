@@ -555,7 +555,8 @@ control_rooster:
 	and	#BUTTON_A
 	beq	:+
 	lda	in_the_air
-	bne	:+
+	cmp	#2
+	beq	:+
 	lda	#VELOCITY
 	jsr	jump_rooster
 :
