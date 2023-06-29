@@ -265,6 +265,7 @@ rooster_game:
 	jmp	loop
 
 rooster_crash:
+	jsr	crash_slide
 	jsr	use_crash_sprites
 	jsr	adjust_sprite_positions
 	jmp	loop
@@ -558,6 +559,14 @@ consider_falling:
 	jmp	jump_rooster
 
 exit_move_rooster:
+	rts
+
+crash_slide:
+	lda	rooster_y
+	cmp	footing_prev
+	bcs	exit_move_rooster
+	inc	rooster_y
+:
 	rts
 
 check_button:
