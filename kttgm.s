@@ -565,7 +565,7 @@ exit_move_rooster:
 crash_slide:
 	lda	rooster_y
 	cmp	footing_prev
-	bcs	exit_move_rooster
+	bcs	:+
 	inc	rooster_y
 :
 	rts
