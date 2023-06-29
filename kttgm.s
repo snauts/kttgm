@@ -159,7 +159,7 @@ BUTTON_START	= %00001000
 VELOCITY	= 252
 GRAVITATION	= 4
 FALLING		= 12
-BUMPING		= 4
+BUMPING		= 2
 
 SPRITE_BLOCK	= (sprites_end - sprites)
 MAIN_SPRITES	= SPRITE_BLOCK / 4
@@ -295,6 +295,9 @@ start_game:
 	sta	column_tile
 	lda	#$12
 	sta	column_height
+	lda	#$7C
+	sta	footing_prev
+	sta	footing_next
 	jsr	reset_scroll
 	rts
 
@@ -491,21 +494,24 @@ move_rooster_sprites:
 
 	rts
 
-get_platform_height:
+get_footing:
+	lda	scroll_x
+	and	#$0F
+	cmp	#BUMPING
+	bcc	:+
+
+	lda	footing_next
+	sta	footing_prev
+
 	clc
+	lda	#4
 	adc	platform_idx
 	and	#$0F
 	tax
-	lda	platforms, X
-	rts
 
-get_footing:
-	lda	#3
-	jsr	get_platform_height
-	sta	footing_prev
-	lda	#4
-	jsr	get_platform_height
+	lda	platforms, X
 	sta	footing_next
+:
 	rts
 
 move_rooster_position:
@@ -526,11 +532,6 @@ adjust_vertical_pos:
 	sta	rooster_y
 
 snap_to_platform:
-	;; lda	scroll_x
-	;; and	#$0F
-	;; cmp	#BUMPING
-	;; bcc	consider_falling
-
 	lda	rooster_y
 	cmp	footing_next
 	bcc	consider_falling
