@@ -36,7 +36,6 @@ footing_prev:	.res 1
 footing_next:	.res 1
 music_delay:	.res 1
 music_idx:	.res 1
-sprite_set:	.res 1
 pause:		.res 1
 
 var_start:
@@ -145,6 +144,7 @@ JOY2		= $4017
 
 OAM_Y		= $00
 OAM_X		= $03
+OAM_A		= $02
 
 BUTTON_A	= %00000001
 BUTTON_B	= %00000010
@@ -318,7 +318,6 @@ setup_pallete:
 
 copy_sprites_to_oam:
 	ldx	#0
-	ldy	sprite_set
 :
 	lda	sprites, y
 	sta	oam_buffer, x
@@ -373,8 +372,48 @@ init_variables:
 
 	rts
 
-move_rooster_sprites:
+flip_rooster_sprites:
+	ldx	#0
+:
+	sec
+	lda	#$10
+	sbc	oam_buffer + OAM_X, x
+	sta	oam_buffer + OAM_X, x
+
+	lda	#$10
+	sbc	oam_buffer + OAM_Y, x
+	sta	oam_buffer + OAM_Y, x
+
+	lda	oam_buffer + OAM_A, x
+	eor	#%11000000
+	sta	oam_buffer + OAM_A, x
+
+	inx
+	inx
+	inx
+	inx
+	cpx	#SPRITE_BLOCK
+	bne	:-
+	rts
+
+prepare_rooster_sprites:
+	pha
+	ldy	#$00
+	and	#$01
+	beq	:+
+	ldy	#SPRITE_BLOCK
+:
 	jsr	copy_sprites_to_oam
+	pla
+	and	#$02
+	beq	:+
+	jsr	flip_rooster_sprites
+:
+	rts
+
+move_rooster_sprites:
+	lda	#0
+	jsr	prepare_rooster_sprites
 
 	ldx	#0
 :
