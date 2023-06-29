@@ -24,8 +24,6 @@ button_down:	.res 1
 button_diff:	.res 1
 button_last:	.res 1
 velocity:	.res 1
-gravity:	.res 1
-in_the_air:	.res 1
 progress:	.res 1
 column_pos:	.res 1
 column_tile:	.res 1
@@ -45,6 +43,8 @@ rooster_frame:	.res 1
 ppu_ctrl:	.res 1
 seed:		.res 1
 ppu_size:	.res 1
+in_the_air:	.res 1
+gravity:	.res 1
 music_cfg:	.res 8
 var_end:
 
@@ -55,8 +55,8 @@ oam_buffer:	.res 256
 
 .segment "RODATA"
 var_data:
-.byte $38, $7C, $C0, $80
-.byte $42, $1E
+.byte $38, $00, $C0, $80
+.byte $42, $1E, $02, $01
 ;; music_cfg
 .byte $10, $01, $A0, $08
 .byte $30, $03, $60, $08
