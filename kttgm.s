@@ -438,13 +438,16 @@ adjust_crash_dust:
 	sta	oam_buffer + 14
 
 	lda	delta_x
-	sta	oam_buffer + 15
 	sta	oam_buffer + 19
+	sec
+	sbc	#4
+	sta	oam_buffer + 15
 	dec	delta_x
 
 	clc
-	lda	rooster_py
-	adc	delta_y
+	lda	delta_y
+	lsr
+	adc	rooster_py
 	sta	oam_buffer + 12
 
 	sec
