@@ -422,14 +422,13 @@ animate_rooster_sprites:
 	rts
 
 adjust_crash_dust:
+	ldx	#$00
 	lda	crashed
 	cmp	#$10
-	bcs	:+
-	lda	#$00
-:
+	bcc	:+
 	and	#%00001110
 	tax
-
+:
 	lda	crash_dust_sprites + 0, x
 	sta	oam_buffer + 13
 	sta	oam_buffer + 17
