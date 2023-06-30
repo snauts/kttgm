@@ -367,7 +367,6 @@ take_life:
 	rts
 
 start_fade:
-	lda	#$F1
 	sta	progress
 	lda	#$00
 	sta	column_pos
@@ -380,11 +379,14 @@ start_fade:
 crash_epilogue:
 	jsr	adjust_crash_dust
 	lda	crashed
+	bne	:++
+	lda	#$F1
+	ldx	lives
+	cpx	#$FF
 	bne	:+
-	lda	lives
-	cmp	#$FF
-	bne	start_fade
-	jmp	start_title
+	lda	#$F0
+:
+	jmp	start_fade
 :
 	rts
 
@@ -1121,6 +1123,14 @@ sweep_screen:
 	inc	column_pos
 	rts
 fade_done:
+	lda	progress
+	cmp	#$F0
+	beq	@l0
+	cmp	#$F1
+	beq	@l1
+@l0:
+	jmp	start_title
+@l1:
 	jmp	start_game
 
 fill_even_ground:
@@ -1147,6 +1157,7 @@ launch_game:
 	sta	lives
 	jsr	restart_music
 	jsr	setup_lives
+	lda	#$F1
 	jsr	start_fade
 :
 	rts
