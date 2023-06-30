@@ -676,8 +676,12 @@ snap_to_platform:
 	bcs	:+
 	jmp	start_crash
 :
+	lda	in_the_air
+	beq	:+
 	lda	#$00
 	sta	in_the_air
+	jsr	ck_sound
+:
 	lda	footing_snap
 	sta	rooster_y
 
@@ -1274,5 +1278,14 @@ crash_sound:
 	lda	#$08
 	sta	NOISE_LO
 	lda	#$C0
+	sta	NOISE_HI
+	rts
+
+ck_sound:
+	lda	#$00
+	sta	NOISE_VOL
+	lda	#$01
+	sta	NOISE_LO
+	lda	#$10
 	sta	NOISE_HI
 	rts
