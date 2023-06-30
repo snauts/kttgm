@@ -392,17 +392,12 @@ animate_rooster_sprites:
 	cmp	#2
 	beq	@exit
 
-	lda	counter
-	and	#$03
-	bne	:+
-
-	clc
+	inc	rooster_frame
 	lda	rooster_frame
-	adc	#$02
-	and	#$0F
-	sta	rooster_frame
-:
-	ldx	rooster_frame
+	lsr
+	and	#%00001110
+
+	tax
 	ldy	#$20
 
 	lda	in_the_air
