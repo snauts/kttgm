@@ -118,6 +118,11 @@ crash_dust_sprites:
 .byte $FF, $00, $30, $85, $29, $05, $39, $85
 .byte $19, $45, $15, $85, $31, $45, $30, $05
 
+life_sprites:
+.byte $0C, $1E, $04, $04
+.byte $0C, $1E, $04, $0D
+.byte $0C, $1E, $04, $16
+
 title_data:
 .byte $05, $23, $DB, $05, $A5, $A5
 .byte $06, $23, $D2, $A0, $A0, $A0, $50
@@ -350,7 +355,7 @@ start_fade:
 	sta	column_pos
 	lda	#%10001100
 	sta	ppu_ctrl
-	jsr	hide_all_sprites
+	jsr	hide_some_sprites
 	jsr	get_fade_start
 	rts
 
@@ -765,6 +770,19 @@ hide_all_sprites:
 	bne	:-
 	rts
 
+hide_some_sprites:
+	lda	#255
+	ldx	#0
+:
+	sta	oam_buffer, X
+	inx
+	inx
+	inx
+	inx
+	cpx	#SPRITE_BLOCK
+	bne	:-
+	rts
+
 fill_ground_cell:
 	sta	ppu_data + 2, x
 	adc	#16
@@ -1099,8 +1117,19 @@ launch_game:
 	and	#BUTTON_START
 	beq	:+
 	jsr	restart_music
+	jsr	setup_lives
 	jsr	start_fade
 :
+	rts
+
+setup_lives:
+	ldx	#0
+:
+	lda	life_sprites, x
+	sta	oam_buffer + 128, x
+	inx
+	cpx	#12
+	bne	:-
 	rts
 
 produce_vol:
