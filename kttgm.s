@@ -35,6 +35,7 @@ footing_next:	.res 1
 footing_snap:	.res 1
 music_delay:	.res 1
 rooster_py:	.res 1
+image_ptr:	.res 1
 music_idx:	.res 1
 crashed:	.res 1
 delta_x:	.res 1
@@ -297,7 +298,7 @@ fade_screen:
 start_title:
 	lda	#$00
 	sta	progress
-	lda	#$00
+	lda	image_ptr
 	sta	column_pos
 	lda	#%10001000
 	sta	ppu_ctrl
@@ -1035,7 +1036,7 @@ draw_title_screen:
 :
 	lda	title_data, X
 	bne	:+
-	ldx	#$00
+	ldx	image_ptr
 	jmp	:-
 :
 	sta	ppu_size
