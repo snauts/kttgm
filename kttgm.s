@@ -658,13 +658,13 @@ exit_move_rooster:
 	rts
 
 crash_slide:
+	dec	crashed
 	lda	rooster_y
 	cmp	footing_prev
 	bcs	@exit
 	inc	rooster_y
 	rts
 @exit:
-	dec	crashed
 	rts
 
 check_button:
