@@ -40,6 +40,7 @@ crashed:	.res 1
 delta_x:	.res 1
 delta_y:	.res 1
 pause:		.res 1
+lives:		.res 1
 
 var_start:
 rooster_x:	.res 1
@@ -174,6 +175,7 @@ GRAVITATION	= 4
 NEXT_IDX	= 5
 FALLING		= 12
 BUMPING		= 0
+LIFE_OFFSET	= 128
 
 SPRITE_BLOCK	= (sprites_end - sprites)
 MAIN_SPRITES	= SPRITE_BLOCK / 4
@@ -346,6 +348,16 @@ start_crash:
 	lda	rooster_py
 	adc	#16
 	sta	rooster_py
+
+	dec	lives
+	lda	lives
+	clc
+	asl
+	asl
+	tax
+	lda	#$FF
+	sta	oam_buffer + LIFE_OFFSET, x
+
 	rts
 
 start_fade:
@@ -1120,6 +1132,8 @@ launch_game:
 	lda	button_last
 	and	#BUTTON_START
 	beq	:+
+	lda	#3
+	sta	lives
 	jsr	restart_music
 	jsr	setup_lives
 	jsr	start_fade
@@ -1130,7 +1144,7 @@ setup_lives:
 	ldx	#0
 :
 	lda	life_sprites, x
-	sta	oam_buffer + 128, x
+	sta	oam_buffer + LIFE_OFFSET, x
 	inx
 	cpx	#12
 	bne	:-
