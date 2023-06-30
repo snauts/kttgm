@@ -339,7 +339,7 @@ start_crash:
 
 	clc
 	lda	rooster_py
-	adc	#10
+	adc	#16
 	sta	rooster_py
 	rts
 
