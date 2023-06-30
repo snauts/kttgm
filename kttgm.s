@@ -349,15 +349,21 @@ start_crash:
 	adc	#16
 	sta	rooster_py
 
+	jsr	take_life
+	rts
+
+take_life:
 	dec	lives
 	lda	lives
+	cmp	#$FF
+	beq	:+
 	clc
 	asl
 	asl
 	tax
 	lda	#$FF
 	sta	oam_buffer + LIFE_OFFSET, x
-
+:
 	rts
 
 start_fade:
@@ -374,7 +380,12 @@ start_fade:
 crash_epilogue:
 	jsr	adjust_crash_dust
 	lda	crashed
-	beq	start_fade
+	bne	:+
+	lda	lives
+	cmp	#$FF
+	bne	start_fade
+	jmp	start_title
+:
 	rts
 
 setup_pallete:
