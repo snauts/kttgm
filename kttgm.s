@@ -134,7 +134,10 @@ title_data:
 .byte $0B, $21, $AE, $47, $48, $49, $4A, $4B, $4C, $4D, $4E, $4B
 .byte $07, $21, $D2, $2D, $2E, $2F, $27, $36
 .byte $00
-title_end:
+game_over_text:
+.byte $06, $23, $DA, $AA, $AA, $AA, $AA
+.byte $0B, $21, $8B, $46, $2E, $2D, $2A, $00, $3F, $4F, $2A, $28
+.byte $00
 
 .include "notes.h"
 
