@@ -159,6 +159,9 @@ SQ2_VOL		= $4004
 SQ2_SWEEP	= $4005
 SQ2_LO		= $4006
 SQ2_HI		= $4007
+NOISE_VOL	= $400C
+NOISE_LO	= $400E
+NOISE_HI	= $400F
 DMC_FREQ	= $4010
 OAMDMA		= $4014
 SND_CHN		= $4015
@@ -236,7 +239,7 @@ rst:
 	stx	PPUCTRL
 	stx	PPUMASK
 	stx	DMC_FREQ
-	lda	#%00000011
+	lda	#%00001011
 	sta	SND_CHN
 
 	;; Wait for PPU to stabilize
@@ -354,6 +357,7 @@ start_crash:
 	adc	#16
 	sta	rooster_py
 
+	jsr	crash_sound
 	jsr	take_life
 	rts
 
@@ -1262,4 +1266,13 @@ play_sound:
 	lda	#$30
 	sta	SQ1_VOL
 	sta	SQ2_VOL
+	rts
+
+crash_sound:
+	lda	#$04
+	sta	NOISE_VOL
+	lda	#$08
+	sta	NOISE_LO
+	lda	#$C0
+	sta	NOISE_HI
 	rts
