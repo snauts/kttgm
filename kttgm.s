@@ -37,7 +37,8 @@ music_delay:	.res 1
 rooster_py:	.res 1
 music_idx:	.res 1
 crashed:	.res 1
-dust_x:		.res 1
+delta_x:	.res 1
+delta_y:	.res 1
 pause:		.res 1
 
 var_start:
@@ -112,6 +113,10 @@ sprites_end:
 crash_sprites:
 .byte $3D, $3E, $1D, $FF, $FF, $2E, $2D
 .byte $3B, $3C, $2C, $2B, $2A, $1A, $1B, $1C
+
+crash_dust_sprites:
+.byte $FF, $00, $30, $85, $29, $05, $39, $85
+.byte $19, $45, $15, $85, $31, $45, $30, $05
 
 title_data:
 .byte $05, $23, $DB, $05, $A5, $A5
@@ -328,7 +333,14 @@ start_crash:
 	clc
 	lda	rooster_x
 	adc	#$10
-	sta	dust_x
+	sta	delta_x
+	lda	#$08
+	sta	delta_y
+
+	clc
+	lda	rooster_py
+	adc	#10
+	sta	rooster_py
 	rts
 
 start_fade:
@@ -410,20 +422,37 @@ animate_rooster_sprites:
 	rts
 
 adjust_crash_dust:
-	lda	#$85
-	sta	oam_buffer + 18
+	lda	crashed
+	cmp	#$10
+	bcs	:+
+	lda	#$00
+:
+	and	#%00001110
+	tax
 
-	lda	dust_x
+	lda	crash_dust_sprites + 0, x
+	sta	oam_buffer + 13
+	sta	oam_buffer + 17
+	lda	crash_dust_sprites + 1, x
+	sta	oam_buffer + 18
+	eor	#%10000000
+	sta	oam_buffer + 14
+
+	lda	delta_x
 	sta	oam_buffer + 15
 	sta	oam_buffer + 19
-	dec	dust_x
+	dec	delta_x
 
 	clc
 	lda	rooster_py
-	adc	#6
-	sta	oam_buffer + 16
-	adc	#10
+	adc	delta_y
 	sta	oam_buffer + 12
+
+	sec
+	lda	rooster_py
+	sbc	delta_y
+	sta	oam_buffer + 16
+	inc	delta_y
 
 	rts
 
