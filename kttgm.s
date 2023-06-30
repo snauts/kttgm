@@ -181,6 +181,7 @@ FALLING		= 12
 BUMPING		= 0
 LIFE_OFFSET	= 128
 
+GAME_OVER	= (game_over_text - title_data)
 SPRITE_BLOCK	= (sprites_end - sprites)
 MAIN_SPRITES	= SPRITE_BLOCK / 4
 
@@ -388,6 +389,8 @@ crash_epilogue:
 	ldx	lives
 	cpx	#$FF
 	bne	:+
+	lda     #GAME_OVER
+	sta     image_ptr
 	lda	#$F0
 :
 	jmp	start_fade
