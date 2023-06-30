@@ -380,9 +380,6 @@ animate_rooster_sprites:
 	cmp	#2
 	beq	@exit
 
-	lda	crashed
-	bne	@exit
-
 	lda	counter
 	and	#$03
 	bne	:+
