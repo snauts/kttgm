@@ -416,9 +416,13 @@ animate_rooster_sprites:
 	sty	oam_buffer + 9
 
 	lda	#$FF
-	sta	oam_buffer + 13
-	sta	oam_buffer + 17
+	sta	oam_buffer + 12
+	sta	oam_buffer + 16
+	rts
 @exit:
+	lda	#$FF
+	sta	oam_buffer + 20
+	sta	oam_buffer + 24
 	rts
 
 adjust_crash_dust:
