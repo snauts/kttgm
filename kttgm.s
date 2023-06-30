@@ -37,6 +37,7 @@ music_delay:	.res 1
 rooster_py:	.res 1
 music_idx:	.res 1
 crashed:	.res 1
+dust_x:		.res 1
 pause:		.res 1
 
 var_start:
@@ -273,7 +274,7 @@ rooster_crash:
 	jsr	crash_slide
 	jsr	use_crash_sprites
 	jsr	adjust_sprite_positions
-	jsr	clean_up_crash
+	jsr	crash_epilogue
 	jmp	loop
 
 fade_screen:
@@ -321,8 +322,13 @@ start_rooster:
 start_crash:
 	lda	#$03
 	sta	progress
-	lda	#30
+	lda	#$20
 	sta	crashed
+
+	clc
+	lda	rooster_x
+	adc	#$10
+	sta	dust_x
 	rts
 
 start_fade:
@@ -334,6 +340,12 @@ start_fade:
 	sta	ppu_ctrl
 	jsr	hide_all_sprites
 	jsr	get_fade_start
+	rts
+
+crash_epilogue:
+	jsr	adjust_crash_dust
+	lda	crashed
+	beq	start_fade
 	rts
 
 setup_pallete:
@@ -398,6 +410,24 @@ animate_rooster_sprites:
 	sta	oam_buffer + 13
 	sta	oam_buffer + 17
 @exit:
+	rts
+
+adjust_crash_dust:
+	lda	#$85
+	sta	oam_buffer + 18
+
+	lda	dust_x
+	sta	oam_buffer + 15
+	sta	oam_buffer + 19
+	dec	dust_x
+
+	clc
+	lda	rooster_py
+	adc	#6
+	sta	oam_buffer + 16
+	adc	#10
+	sta	oam_buffer + 12
+
 	rts
 
 wait_vblank:
@@ -610,13 +640,6 @@ crash_slide:
 	rts
 @exit:
 	dec	crashed
-	rts
-
-clean_up_crash:
-	lda	crashed
-	bne	:+
-	jmp	start_fade
-:
 	rts
 
 check_button:
