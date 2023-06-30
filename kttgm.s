@@ -109,7 +109,7 @@ sprites_end:
 .byte $00, $18, $04, $10
 
 crash_sprites:
-.byte $3D, $3E, $1D, $32, $32, $2E, $2D
+.byte $3D, $3E, $1D, $FF, $FF, $2E, $2D
 .byte $3B, $3C, $2C, $2B, $2A, $1A, $1B, $1C
 
 title_data:
@@ -394,7 +394,7 @@ animate_rooster_sprites:
 	stx	oam_buffer + 5
 	sty	oam_buffer + 9
 
-	lda	#$32
+	lda	#$FF
 	sta	oam_buffer + 13
 	sta	oam_buffer + 17
 @exit:
