@@ -48,6 +48,7 @@ level_idx:	.res 1
 level_block:	.res 1
 level_loops:	.res 1
 level_done:	.res 1
+level_data:	.res 2
 level_ptr:	.res 2
 
 var_start:
@@ -148,10 +149,12 @@ game_over_text:
 
 .include "notes.h"
 
-.align 2
 level_fns:
 .word small_bumps
 .word produce_random_block
+
+small_bump_data:
+.byte $0A, $08, $10, $24, $12, $20, $12, $20
 
 .segment "CODE"
 
@@ -1051,32 +1054,30 @@ no_eor:
 	rts
 
 small_bumps:
-	lda	level_block
-	bne	:+
-	lda	#$10
-	sta	column_height
-	lda	#$24
-	sta	column_tile
-	jmp	:++
-:
-	lda	#$12
-	sta	column_height
-	lda	#$20
-	sta	column_tile
-:
+	lda	#<small_bump_data
+	sta	level_data + 0
+	lda	#>small_bump_data
+	sta	level_data + 1
+	jmp	produce_looped_level
+
+produce_looped_level:
 	inc	level_block
-	lda	level_block
-	cmp	#3
+	inc	level_block
+
+	ldy	#1
+	lda	(level_data), Y
+	cmp	level_block
 	bne	:+
-	lda	#0
+	lda	#2
 	sta	level_block
 	inc	level_loops
-	lda	level_loops
-	cmp	#10
-	bne	:+
-	lda	#1
-	sta	level_done
 :
+	ldy	level_block
+	lda	(level_data), Y
+	sta	column_height
+	iny
+	lda	(level_data), Y
+	sta	column_tile
 	rts
 
 produce_block:
