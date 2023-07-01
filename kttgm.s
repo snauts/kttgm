@@ -153,11 +153,13 @@ level_fns:
 .word produce_looped_level
 .word produce_looped_level
 .word produce_looped_level
+.word produce_looped_level
 .word produce_random_block
 
 level_inputs:
 .word small_bump_data
 .word medium_pit_data
+.word martas_levelis
 .word tall_fence_data
 .word $0000
 
@@ -166,6 +168,12 @@ small_bump_data:
 
 medium_pit_data:
 .byte $08, $08, $18, $20, $12, $20, $12, $20
+
+martas_levelis:
+.byte $04, $0E
+.byte $18, $20, $12, $20
+.byte $18, $24, $10, $20
+.byte $18, $24, $14, $20
 
 tall_fence_data:
 .byte $08, $08, $18, $20, $10, $24, $18, $20
