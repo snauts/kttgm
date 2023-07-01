@@ -43,6 +43,12 @@ delta_y:	.res 1
 pause:		.res 1
 lives:		.res 1
 
+level_idx:	.res 1
+level_block:	.res 1
+level_loops:	.res 1
+level_done:	.res 1
+level_ptr:	.res 2
+
 var_start:
 rooster_x:	.res 1
 rooster_y:	.res 1
@@ -138,6 +144,10 @@ game_over_text:
 .byte $06, $23, $DA, $AA, $AA, $AA, $AA
 .byte $0B, $21, $8B, $46, $2E, $2D, $2A, $00, $3F, $4F, $2A, $28
 .byte $00
+
+
+level_fns:
+.word small_bumps
 
 .include "notes.h"
 
@@ -1005,6 +1015,19 @@ update_ppu:
 bad_ppu_data:
 	rts
 
+produce_random_block:
+	jsr	get_random_number
+	clc
+	and	#$03
+	asl
+	adc	#$0C
+	sta	column_height
+	jsr	get_random_number
+	and	#$04
+	ora	#$20
+	sta	column_tile
+	rts
+
 get_random_number:
 	lda	seed
 	beq	do_eor
@@ -1017,6 +1040,32 @@ no_eor:
 	sta	seed
 	rts
 
+small_bumps:
+	lda	level_block
+	bne	:+
+	lda	#$10
+	sta	column_height
+	lda	#$24
+	sta	column_tile
+	jmp	:++
+:
+	lda	#$12
+	sta	column_height
+	lda	#$20
+	sta	column_tile
+:
+	inc	level_block
+	lda	level_block
+	cmp	#3
+	bne	:+
+	lda	#0
+	sta	level_block
+:
+	rts
+
+produce_block:
+	jmp	(level_ptr)
+
 fill_next_column:
 	lda	scroll_x
 	and	#7
@@ -1027,16 +1076,7 @@ fill_next_column:
 	cmp	#$26
 	bne	continue_old_block
 generate_new_block:
-	jsr	get_random_number
-	clc
-	and	#$03
-	asl
-	adc	#$0C
-	sta	column_height
-	jsr	get_random_number
-	and	#$04
-	ora	#$20
-	sta	column_tile
+	jsr	produce_block
 continue_old_block:
 	jsr	update_column
 skip_column_update:
@@ -1170,11 +1210,28 @@ launch_game:
 	beq	:+
 	lda	#3
 	sta	lives
+	lda	#0
+	sta	level_idx
+	jsr	load_level
 	jsr	restart_music
 	jsr	setup_lives
 	lda	#$F1
 	jsr	start_fade
 :
+	rts
+
+load_level:
+	lda	#0
+	sta	level_done
+	sta	level_loops
+	sta	level_block
+	ldx	level_idx
+	lda	level_fns + 0, X
+	sta	level_ptr + 0
+	lda	level_fns + 1, X
+	sta	level_ptr + 1
+	inc	level_idx
+	inc	level_idx
 	rts
 
 setup_lives:
