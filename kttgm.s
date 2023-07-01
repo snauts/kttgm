@@ -48,8 +48,8 @@ level_idx:	.res 1
 level_block:	.res 1
 level_loops:	.res 1
 level_done:	.res 1
-level_data:	.res 2
-level_ptr:	.res 2
+current_fn:	.res 2
+current_input:	.res 2
 
 var_start:
 rooster_x:	.res 1
@@ -150,8 +150,12 @@ game_over_text:
 .include "notes.h"
 
 level_fns:
-.word small_bumps
+.word produce_looped_level
 .word produce_random_block
+
+level_inputs:
+.word small_bump_data
+.word $0000
 
 small_bump_data:
 .byte $0A, $08, $10, $24, $12, $20, $12, $20
@@ -1053,19 +1057,12 @@ no_eor:
 	sta	seed
 	rts
 
-small_bumps:
-	lda	#<small_bump_data
-	sta	level_data + 0
-	lda	#>small_bump_data
-	sta	level_data + 1
-	jmp	produce_looped_level
-
 produce_looped_level:
 	inc	level_block
 	inc	level_block
 
 	ldy	#1
-	lda	(level_data), Y
+	lda	(current_input), Y
 	cmp	level_block
 	bne	:+
 	lda	#2
@@ -1073,14 +1070,14 @@ produce_looped_level:
 	inc	level_loops
 :
 	ldy	level_block
-	lda	(level_data), Y
+	lda	(current_input), Y
 	sta	column_height
 	iny
-	lda	(level_data), Y
+	lda	(current_input), Y
 	sta	column_tile
 
 	ldy	#0
-	lda	(level_data), Y
+	lda	(current_input), Y
 	cmp	level_loops
 	bne	:+
 	lda	#1
@@ -1091,7 +1088,7 @@ produce_looped_level:
 produce_block:
 	ldx	level_done
 	bne	:+
-	jmp	(level_ptr)
+	jmp	(current_fn)
 :
 	inc	level_done
 	cpx	#10
@@ -1285,10 +1282,17 @@ load_level:
 	sta	level_loops
 	sta	level_block
 	ldx	level_idx
+
 	lda	level_fns + 0, X
-	sta	level_ptr + 0
+	sta	current_fn + 0
 	lda	level_fns + 1, X
-	sta	level_ptr + 1
+	sta	current_fn + 1
+
+	lda	level_inputs + 0, X
+	sta	current_input + 0
+	lda	level_inputs + 1, X
+	sta	current_input + 1
+
 	inc	level_idx
 	inc	level_idx
 	rts
