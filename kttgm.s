@@ -1096,7 +1096,7 @@ produce_block:
 	inc	level_done
 	cpx	#10
 	bcc	:+
-	lda	#1
+	lda	#8
 	sta	flash
 	jsr	load_level
 :
@@ -1122,14 +1122,9 @@ continue_old_block:
 	rts
 
 palette_flash:
-	ldx	flash
+	lda	flash
 	beq	@exit
 
-	cmp	#7
-	bne	:+
-	ldx	#0
-	stx	flash
-:
 	ldx	#$01
 	stx	ppu_size
 	ldx	#$3F
@@ -1142,6 +1137,7 @@ palette_flash:
 	ldx	#$30
 :
 	stx	ppu_data + 2
+	dec	flash
 @exit:
 	rts
 
