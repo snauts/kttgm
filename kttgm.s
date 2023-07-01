@@ -152,11 +152,13 @@ game_over_text:
 level_fns:
 .word produce_looped_level
 .word produce_looped_level
+.word produce_looped_level
 .word produce_random_block
 
 level_inputs:
 .word small_bump_data
 .word medium_pit_data
+.word tall_fence_data
 .word $0000
 
 small_bump_data:
@@ -164,6 +166,9 @@ small_bump_data:
 
 medium_pit_data:
 .byte $08, $08, $18, $20, $12, $20, $12, $20
+
+tall_fence_data:
+.byte $08, $08, $18, $20, $10, $24, $18, $20
 
 .segment "CODE"
 
@@ -263,7 +268,7 @@ rst:
 	stx	PPUCTRL
 	stx	PPUMASK
 	stx	DMC_FREQ
-	lda	#%00001011
+	lda	#%00001111
 	sta	SND_CHN
 
 	;; Wait for PPU to stabilize
