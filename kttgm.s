@@ -151,6 +151,7 @@ game_over_text:
 .align 2
 level_fns:
 .word small_bumps
+.word produce_random_block
 
 .segment "CODE"
 
@@ -367,6 +368,11 @@ start_crash:
 	lda	rooster_py
 	adc	#16
 	sta	rooster_py
+
+	lda	#0
+	sta	level_block
+	sta	level_loops
+	sta	level_done
 
 	jsr	crash_sound
 	jsr	take_life
@@ -1064,11 +1070,32 @@ small_bumps:
 	bne	:+
 	lda	#0
 	sta	level_block
+	inc	level_loops
+	lda	level_loops
+	cmp	#10
+	bne	:+
+	lda	#1
+	sta	level_done
 :
 	rts
 
 produce_block:
+	ldx	level_done
+	bne	:+
 	jmp	(level_ptr)
+:
+	cpx	#8
+	bcc	:+
+	lda	#1
+	sta	flash
+	jsr	load_level
+:
+	inc	level_done
+	lda	#$12
+	sta	column_height
+	lda	#$20
+	sta	column_tile
+	rts
 
 fill_next_column:
 	lda	scroll_x
