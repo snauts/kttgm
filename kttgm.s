@@ -1129,6 +1129,8 @@ palette_flash:
 	lda	flash
 	beq	@exit
 
+	jsr	level_complete_sound
+
 	ldx	#$01
 	stx	ppu_size
 	ldx	#$3F
@@ -1421,4 +1423,24 @@ ck_sound:
 	sta	NOISE_LO
 	lda	#$10
 	sta	NOISE_HI
+	rts
+
+level_complete_sound:
+	ldx	#$8F
+	stx	SQ2_VOL
+	stx	SQ1_VOL
+
+	pha
+	clc
+	asl
+	asl
+	asl
+	asl
+	sta	SQ2_LO
+	sta	SQ1_LO
+	pla
+
+	ldx	#$0
+	stx	SQ2_HI
+	stx	SQ1_HI
 	rts
