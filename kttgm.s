@@ -1084,13 +1084,13 @@ produce_block:
 	bne	:+
 	jmp	(level_ptr)
 :
+	inc	level_done
 	cpx	#8
 	bcc	:+
 	lda	#1
 	sta	flash
 	jsr	load_level
 :
-	inc	level_done
 	lda	#$12
 	sta	column_height
 	lda	#$20
