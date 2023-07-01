@@ -1395,7 +1395,7 @@ crash_sound:
 ck_sound:
 	lda	#$00
 	sta	NOISE_VOL
-	lda	#$01
+	lda	#$0F
 	sta	NOISE_LO
 	lda	#$10
 	sta	NOISE_HI
