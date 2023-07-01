@@ -146,11 +146,11 @@ game_over_text:
 .byte $0B, $21, $8B, $46, $2E, $2D, $2A, $00, $3F, $4F, $2A, $28
 .byte $00
 
+.include "notes.h"
 
+.align 2
 level_fns:
 .word small_bumps
-
-.include "notes.h"
 
 .segment "CODE"
 
