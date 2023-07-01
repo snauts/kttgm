@@ -376,10 +376,7 @@ start_crash:
 	adc	#16
 	sta	rooster_py
 
-	lda	#0
-	sta	level_block
-	sta	level_loops
-	sta	level_done
+	jsr	reset_level_counters
 
 	jsr	crash_sound
 	jsr	take_life
@@ -1277,10 +1274,6 @@ launch_game:
 	rts
 
 load_level:
-	lda	#0
-	sta	level_done
-	sta	level_loops
-	sta	level_block
 	ldx	level_idx
 
 	lda	level_fns + 0, X
@@ -1295,6 +1288,16 @@ load_level:
 
 	inc	level_idx
 	inc	level_idx
+
+	jsr	reset_level_counters
+	rts
+
+reset_level_counters:
+	lda	#0
+	sta	level_done
+	sta	level_block
+	lda	#1
+	sta	level_loops
 	rts
 
 setup_lives:
