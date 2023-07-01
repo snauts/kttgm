@@ -151,14 +151,19 @@ game_over_text:
 
 level_fns:
 .word produce_looped_level
+.word produce_looped_level
 .word produce_random_block
 
 level_inputs:
 .word small_bump_data
+.word medium_pit_data
 .word $0000
 
 small_bump_data:
-.byte $0A, $08, $10, $24, $12, $20, $12, $20
+.byte $08, $08, $10, $24, $12, $20, $12, $20
+
+medium_pit_data:
+.byte $08, $08, $18, $20, $12, $20, $12, $20
 
 .segment "CODE"
 
