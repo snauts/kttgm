@@ -1090,7 +1090,7 @@ produce_block:
 	inc	level_done
 	cpx	#10
 	bcc	:+
-	lda	#8
+	lda	#12
 	sta	flash
 	jsr	load_level
 :
