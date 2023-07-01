@@ -40,6 +40,7 @@ music_idx:	.res 1
 crashed:	.res 1
 delta_x:	.res 1
 delta_y:	.res 1
+flash:		.res 1
 pause:		.res 1
 lives:		.res 1
 
@@ -844,6 +845,9 @@ fill_ground_cell:
 	rts
 
 fill_column:
+	lda	#30
+	sta	ppu_size
+
 	jsr	select_nametable
 	ora	#$20
 	sta	ppu_data + 0
@@ -1069,7 +1073,7 @@ produce_block:
 fill_next_column:
 	lda	scroll_x
 	and	#7
-	bne	skip_column_update
+	bne	palette_flash
 	lda	column_tile
 	cmp	#$24
 	beq	generate_new_block
@@ -1079,7 +1083,30 @@ generate_new_block:
 	jsr	produce_block
 continue_old_block:
 	jsr	update_column
-skip_column_update:
+	rts
+
+palette_flash:
+	ldx	flash
+	beq	@exit
+
+	cmp	#7
+	bne	:+
+	ldx	#0
+	stx	flash
+:
+	ldx	#$01
+	stx	ppu_size
+	ldx	#$3F
+	stx	ppu_data + 0
+	ldx	#$10
+	stx	ppu_data + 1
+	ldx	#$0F
+	and	#1
+	bne	:+
+	ldx	#$30
+:
+	stx	ppu_data + 2
+@exit:
 	rts
 
 draw_title_screen:
