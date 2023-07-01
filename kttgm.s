@@ -1078,6 +1078,14 @@ produce_looped_level:
 	iny
 	lda	(level_data), Y
 	sta	column_tile
+
+	ldy	#0
+	lda	(level_data), Y
+	cmp	level_loops
+	bne	:+
+	lda	#1
+	sta	level_done
+:
 	rts
 
 produce_block:
@@ -1086,7 +1094,7 @@ produce_block:
 	jmp	(level_ptr)
 :
 	inc	level_done
-	cpx	#8
+	cpx	#10
 	bcc	:+
 	lda	#1
 	sta	flash
