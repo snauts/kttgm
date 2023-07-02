@@ -187,7 +187,7 @@ medium_pit_data:
 .byte $08, $08, $18, $20, $12, $20, $12, $20
 
 martas_levelis:
-.byte $04, $0E
+.byte $06, $0E
 .byte $18, $20, $12, $20
 .byte $18, $24, $10, $20
 .byte $18, $24, $14, $20
