@@ -21,6 +21,8 @@ sky_tiles:	.res 30
 counter:	.res 2
 scroll_x:	.res 1
 scroll_c:	.res 1
+scroll_7:	.res 1
+scroll_f:	.res 1
 button_down:	.res 1
 button_diff:	.res 1
 button_last:	.res 1
@@ -815,6 +817,8 @@ reset_scroll:
 	lda	#$00
 	sta	scroll_x
 	sta	scroll_c
+	sta	scroll_7
+	sta	scroll_f
 	rts
 
 scroll_screen:
@@ -822,6 +826,10 @@ scroll_screen:
 	lda	#1
 	adc	scroll_x
 	sta	scroll_x
+	and	#$0F
+	sta	scroll_f
+	and	#$07
+	sta	scroll_7
 	lda	#0
 	adc	scroll_c
 	sta	scroll_c
