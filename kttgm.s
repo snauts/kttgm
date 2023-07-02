@@ -133,6 +133,10 @@ life_sprites:
 .byte $0C, $1E, $04, $0D
 .byte $0C, $1E, $04, $16
 
+sky_offset_map:
+.byte $00, $00, $00, $00, $00, $01, $01, $01
+.byte $02, $02, $02, $02, $02, $01, $01, $01
+
 title_data:
 .byte $05, $23, $DB, $05, $A5, $A5
 .byte $06, $23, $D2, $A0, $A0, $A0, $50
@@ -886,7 +890,12 @@ fill_column:
 
 	ldx	#0
 fill_sky:
+	lda	column_pos
+	and	#$0F
+	tay
 	txa
+	clc
+	adc	sky_offset_map, y
 	sta	ppu_data + 2, x
 	inx
 	cpx	column_height
