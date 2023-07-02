@@ -1487,12 +1487,18 @@ update_sky_tiles:
 	lda	star_random
 	and	#$1F
 	tay
+
 	lda	random_sequence, y
+	and	#$1F
 	sta	star_counter
-	inc	star_random
+	inc	star_counter
+
+	lda	random_sequence, y
 	clc
 	and	#$03
 	adc	#$1C
+
+	inc	star_random
 @empty:
 	dec	star_counter
 	sta	sky_tiles + $00, x
