@@ -17,6 +17,7 @@
 ppu_data:	.res 32
 platforms:	.res 16
 attributes:	.res 12
+sky_tiles:	.res 30
 counter:	.res 2
 scroll_x:	.res 1
 scroll_c:	.res 1
@@ -132,10 +133,6 @@ life_sprites:
 .byte $0C, $1E, $04, $04
 .byte $0C, $1E, $04, $0D
 .byte $0C, $1E, $04, $16
-
-sky_offset_map:
-.byte $00, $00, $00, $00, $00, $01, $01, $01
-.byte $02, $02, $02, $02, $02, $01, $01, $01
 
 title_data:
 .byte $05, $23, $DB, $05, $A5, $A5
@@ -320,11 +317,13 @@ title_screen:
 	jmp	loop
 
 prepare_game:
+	jsr	update_sky_tiles
 	jsr	fill_even_ground
 	jmp	loop
 
 rooster_game:
 	jsr	control_rooster
+	jsr	update_sky_tiles_on_one
 	jsr	fill_next_column
 	jsr	scroll_screen
 	jsr	move_rooster_position
@@ -890,12 +889,8 @@ fill_column:
 
 	ldx	#0
 fill_sky:
-	lda	column_pos
-	and	#$0F
-	tay
 	txa
-	clc
-	adc	sky_offset_map, y
+	lda	sky_tiles, x
 	sta	ppu_data + 2, x
 	inx
 	cpx	column_height
@@ -1460,4 +1455,22 @@ level_complete_sound:
 	ldx	#$0
 	stx	SQ2_HI
 	stx	SQ1_HI
+	rts
+
+update_sky_tiles:
+:
+	txa
+	sta	sky_tiles, x
+	inx
+	cpx	#30
+	bne	:-
+	rts
+
+update_sky_tiles_on_one:
+	lda	scroll_x
+	and	#7
+	cmp	#1
+	bne	@exit
+	ldx	#0
+@exit:
 	rts
