@@ -649,8 +649,7 @@ move_rooster_sprites:
 	rts
 
 get_footing:
-	lda	scroll_x
-	and	#$0F
+	lda	scroll_f
 	cmp	#BUMPING
 	bne	:+
 
@@ -667,8 +666,7 @@ get_footing:
 	sta	footing_next
 :
 	ldx	footing_next
-	lda	scroll_x
-	and	#$0F
+	lda	scroll_f
 	cmp	#FALLING
 	bcs	:+
 	cpx	footing_prev
@@ -733,8 +731,7 @@ consider_falling:
 	lda	in_the_air
 	bne	exit_move_rooster
 
-	lda	scroll_x
-	and	#$0F
+	lda	scroll_f
 	cmp	#FALLING
 	bne	exit_move_rooster
 
@@ -1131,8 +1128,7 @@ produce_block:
 	rts
 
 fill_next_column:
-	lda	scroll_x
-	and	#7
+	lda	scroll_7
 	bne	palette_flash
 	lda	column_tile
 	cmp	#$24
@@ -1475,8 +1471,7 @@ update_sky_tiles:
 	rts
 
 update_sky_tiles_on_one:
-	lda	scroll_x
-	and	#7
+	lda	scroll_7
 	cmp	#1
 	bne	@exit
 	ldx	#0
