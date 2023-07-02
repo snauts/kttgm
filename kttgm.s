@@ -1315,6 +1315,8 @@ launch_game:
 	jsr	setup_lives
 	lda	#$F1
 	jsr	start_fade
+	lda	#$14
+	sta	sky_offset
 :
 	rts
 
@@ -1334,6 +1336,7 @@ load_level:
 	inc	level_idx
 	inc	level_idx
 
+	dec	sky_offset
 	jsr	reset_level_counters
 	rts
 
