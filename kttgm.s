@@ -32,7 +32,6 @@ column_pos:	.res 1
 column_tile:	.res 1
 column_height:	.res 1
 fade_start:	.res 1
-sky_offset:	.res 1
 sky_counter:	.res 1
 platform_idx:	.res 1
 footing_prev:	.res 1
@@ -65,6 +64,7 @@ seed:		.res 1
 ppu_size:	.res 1
 in_the_air:	.res 1
 gravity:	.res 1
+sky_offset:	.res 1
 music_cfg:	.res 8
 var_end:
 
@@ -77,6 +77,7 @@ oam_buffer:	.res 256
 var_data:
 .byte $38, $00, $C0, $80
 .byte $DD, $1E, $02, $01
+.byte $14
 ;; music_cfg
 .byte $10, $01, $A0, $08
 .byte $30, $03, $60, $08
@@ -174,6 +175,9 @@ level_inputs:
 .word tall_fence_data
 .word $0000
 
+abyss:
+.byte $FF, $04, $1A, $20
+
 small_bump_data:
 .byte $08, $08, $10, $24, $12, $20, $12, $20
 
@@ -224,6 +228,8 @@ OAM_T		= $01
 BUTTON_A	= %00000001
 BUTTON_B	= %00000010
 BUTTON_START	= %00001000
+BUTTON_UP	= %00010000
+BUTTON_DOWN	= %00100000
 
 VELOCITY	= 252
 GRAVITATION	= 4
@@ -1471,39 +1477,49 @@ level_complete_sound:
 	rts
 
 update_sky_tiles:
+	lda	#0
 	ldx	#0
 :
-	txa
-	clc
-	adc	sky_offset
-	lsr
-	lsr
-	lsr
-
-	sta	sky_tiles, x
+	sta	sky_tiles + $00, x
 	inx
-	cpx	#30
+	cpx	sky_offset
 	bne	:-
+
+	lda	#$01
+	sta	sky_tiles + $02, x
+	lda	#$02
+	sta	sky_tiles + $05, x
 
 	lda	sky_counter
 	and	#$1F
-	tax
+	tay
 
 	clc
-	lda	random_sequence, x
+	lda	random_sequence, y
 	and	#3
 	adc	#4
-	sta	sky_tiles + $07
+	sta	sky_tiles + $00, x
 	adc	#4
-	sta	sky_tiles + $08
+	sta	sky_tiles + $01, x
 	adc	#4
-	sta	sky_tiles + $0F
+	sta	sky_tiles + $03, x
 	adc	#4
-	sta	sky_tiles + $10
+	sta	sky_tiles + $04, x
 	adc	#4
-	sta	sky_tiles + $17
+	sta	sky_tiles + $06, x
 	adc	#4
-	sta	sky_tiles + $18
+	sta	sky_tiles + $07, x
+
+	txa
+	adc	#8
+	tax
+
+	lda	#3
+:
+	sta	sky_tiles + $00, x
+	inx
+	cpx	#30
+	bne	:-
 
 	inc	sky_counter
 
