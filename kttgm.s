@@ -378,6 +378,7 @@ start_game:
 start_rooster:
 	lda	#$02
 	sta	progress
+	jsr	update_sky_tiles
 	jsr	move_rooster_sprites
 	rts
 
@@ -1462,6 +1463,7 @@ level_complete_sound:
 	rts
 
 update_sky_tiles:
+	ldx	#0
 :
 	txa
 	sta	sky_tiles, x
@@ -1474,6 +1476,6 @@ update_sky_tiles_on_one:
 	lda	scroll_7
 	cmp	#1
 	bne	@exit
-	ldx	#0
+	jsr	update_sky_tiles
 @exit:
 	rts
