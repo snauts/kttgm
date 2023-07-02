@@ -33,6 +33,8 @@ column_tile:	.res 1
 column_height:	.res 1
 fade_start:	.res 1
 sky_counter:	.res 1
+star_counter:	.res 1
+star_random:	.res 1
 platform_idx:	.res 1
 footing_prev:	.res 1
 footing_next:	.res 1
@@ -1479,11 +1481,25 @@ level_complete_sound:
 update_sky_tiles:
 	lda	#0
 	ldx	#0
-:
+@back:
+	ldy	star_counter
+	bne	@empty
+	lda	star_random
+	and	#$1F
+	tay
+	lda	random_sequence, y
+	sta	star_counter
+	inc	star_random
+	clc
+	and	#$03
+	adc	#$1C
+@empty:
+	dec	star_counter
 	sta	sky_tiles + $00, x
+	lda	#$00
 	inx
 	cpx	sky_offset
-	bne	:-
+	bne	@back
 
 	lda	#$01
 	sta	sky_tiles + $02, x
