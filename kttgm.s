@@ -32,6 +32,8 @@ column_pos:	.res 1
 column_tile:	.res 1
 column_height:	.res 1
 fade_start:	.res 1
+sky_offset:	.res 1
+sky_counter:	.res 1
 platform_idx:	.res 1
 footing_prev:	.res 1
 footing_next:	.res 1
@@ -149,6 +151,12 @@ game_over_text:
 .byte $06, $23, $DA, $AA, $AA, $AA, $AA
 .byte $0B, $21, $8B, $46, $2E, $2D, $2A, $00, $3F, $4F, $2A, $28
 .byte $00
+
+random_sequence:
+.byte $8D, $DC, $3B, $5C, $59, $18, $52, $AA
+.byte $37, $B3, $11, $A1, $FA, $59, $E4, $E7
+.byte $10, $5F, $1A, $C4, $25, $63, $2B, $BA
+.byte $E1, $05, $DF, $2C, $79, $EE, $F6, $5C
 
 .include "notes.h"
 
@@ -1466,10 +1474,39 @@ update_sky_tiles:
 	ldx	#0
 :
 	txa
+	clc
+	adc	sky_offset
+	lsr
+	lsr
+	lsr
+
 	sta	sky_tiles, x
 	inx
 	cpx	#30
 	bne	:-
+
+	lda	sky_counter
+	and	#$1F
+	tax
+
+	clc
+	lda	random_sequence, x
+	and	#3
+	adc	#4
+	sta	sky_tiles + $07
+	adc	#4
+	sta	sky_tiles + $08
+	adc	#4
+	sta	sky_tiles + $0F
+	adc	#4
+	sta	sky_tiles + $10
+	adc	#4
+	sta	sky_tiles + $17
+	adc	#4
+	sta	sky_tiles + $18
+
+	inc	sky_counter
+
 	rts
 
 update_sky_tiles_on_one:
