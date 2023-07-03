@@ -247,7 +247,7 @@ NEXT_IDX	= 5
 FALLING		= 12
 BUMPING		= 0
 LIFE_OFFSET	= 128
-OUTRO_WALK_IN	= 11
+OUTRO_WALK_IN	= 22
 
 GAME_OVER	= (game_over_text - title_data)
 SPRITE_BLOCK	= (sprites_end - sprites)
@@ -873,7 +873,7 @@ scroll_until_home:
 	lda	outro_scroll
 	beq	:+
 	jsr	scroll_screen
-	lda	scroll_f
+	lda	scroll_7
 	bne	:++
 	dec	outro_scroll
 :
@@ -999,13 +999,14 @@ get_attribute:
 
 get_outro_attribute:
 	lda	outro_scroll
-	cmp	#OUTRO_WALK_IN - 0
-	beq	@regular
 	cmp	#OUTRO_WALK_IN - 1
-	beq	@roof
-	cmp	#OUTRO_WALK_IN - 9
-	beq	@roof
+	bcs	@regular
+	cmp	#OUTRO_WALK_IN - 3
+	bcs	@roof
+	cmp	#OUTRO_WALK_IN - 19
 	bcc	@regular
+	cmp	#OUTRO_WALK_IN - 17
+	bcc	@roof
 
 	cpy	#6
 	bcc	@regular
