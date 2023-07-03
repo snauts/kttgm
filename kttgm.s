@@ -1591,6 +1591,10 @@ play_channel:
 	sta	SQ1_LO, X
 	lda	music_notes + 1, Y
 	sta	SQ1_HI, X
+
+	lda	lady_state
+	eor	#$30
+	sta	lady_state
 	rts
 
 restart_music:
