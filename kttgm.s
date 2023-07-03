@@ -182,7 +182,7 @@ house_data:
 .byte $6F, $7F, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 
 outro_palette:
-.byte $08, $18, $09
+.byte $08, $18, $19
 
 random_sequence:
 .byte $8D, $DC, $3B, $5C, $59, $18, $52, $AA
