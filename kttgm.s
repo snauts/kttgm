@@ -485,7 +485,7 @@ start_fade:
 	sta	column_pos
 	lda	#%10001100
 	sta	ppu_ctrl
-	jsr	hide_some_sprites
+	jsr	hide_half_sprites
 	jsr	get_fade_start
 	rts
 
@@ -935,7 +935,7 @@ hide_all_sprites:
 	bne	:-
 	rts
 
-hide_some_sprites:
+hide_half_sprites:
 	lda	#255
 	ldx	#0
 :
@@ -944,7 +944,7 @@ hide_some_sprites:
 	inx
 	inx
 	inx
-	cpx	#SPRITE_BLOCK
+	cpx	#128
 	bne	:-
 	rts
 
