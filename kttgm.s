@@ -56,6 +56,7 @@ outro_column:	.res 1
 outro_delay:	.res 1
 outro_jumps:	.res 1
 outro_input:	.res 1
+outro_note:	.res 1
 lady_state:	.res 1
 
 level_idx:	.res 1
@@ -450,6 +451,7 @@ outro_scene:
 	jsr	move_rooster_position
 	jsr	move_rooster_sprites
 	jsr	animate_rooster_beak
+	jsr	release_rooster_note
 	jsr	outro_check_input
 	jmp	loop
 
@@ -982,6 +984,8 @@ scroll_until_home:
 	sta	outro_delay
 	lda	#VELOCITY
 	jsr	jump_rooster
+	lda	#$70
+	sta	outro_note
 	inc	outro_jumps
 :
 	rts
@@ -1292,6 +1296,8 @@ start_outro:
 	sta	outro_column
 	sta	outro_input
 	sta	lady_state
+	lda	#$FF
+	sta	outro_note
 :
 	lda	#$12
 	sta	column_height
@@ -1873,4 +1879,25 @@ animate_rooster_beak:
 :
 	sty	oam_buffer + 9
 @exit:
+	rts
+
+release_rooster_note:
+	lda	outro_note
+	cmp	#$FF
+	beq	:+
+	sec
+	sbc	#1
+	cmp	#$50
+	bne	:+
+	lda	#$FF
+:
+	sta	outro_note
+	sta	oam_buffer + 60
+	lda	#$1F
+	sta	oam_buffer + 61
+	lda	#$04
+	sta	oam_buffer + 62
+	lda	#$50
+	sta	oam_buffer + 63
+
 	rts
