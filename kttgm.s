@@ -51,6 +51,7 @@ pause:		.res 1
 lives:		.res 1
 
 outro_scroll:	.res 1
+outro_column:	.res 1
 
 level_idx:	.res 1
 level_block:	.res 1
@@ -157,6 +158,28 @@ game_over_text:
 .byte $06, $23, $DA, $AA, $AA, $AA, $AA
 .byte $0B, $21, $8B, $46, $2E, $2D, $2A, $00, $3F, $4F, $2A, $28
 .byte $00
+
+house_data:
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+.byte $68, $68, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 
 outro_palette:
 .byte $08, $18, $09
@@ -1160,6 +1183,8 @@ start_outro:
 	sta	column_tile
 	lda	#OUTRO_WALK_IN
 	sta	outro_scroll
+	lda	#$00
+	sta	outro_column
 	rts
 
 produce_random_block:
@@ -1279,6 +1304,7 @@ fill_outro_column:
 	ora	#$20
 	sta	column_tile
 	jsr	update_column
+	jsr	update_home
 @exit:
 	rts
 
@@ -1685,5 +1711,28 @@ update_outro_palette:
 	sty	ppu_data + 1
 	lda	outro_palette, x
 	sta	ppu_data + 2
+@exit:
+	rts
+
+update_home:
+	lda	outro_scroll
+	cmp	#OUTRO_WALK_IN - 1
+	bcs	@exit
+	cmp	#OUTRO_WALK_IN - 19
+	bcc	@exit
+
+	ldy	outro_column
+	ldx	#8
+:
+	lda	house_data, y
+	beq	@skip_tile
+	sta	ppu_data, x
+@skip_tile:
+	inx
+	iny
+	cpx	#21
+	bne	:-
+	sty	outro_column
+
 @exit:
 	rts
