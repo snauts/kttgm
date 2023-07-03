@@ -50,6 +50,8 @@ flash:		.res 1
 pause:		.res 1
 lives:		.res 1
 
+outro_scroll:	.res 1
+
 level_idx:	.res 1
 level_block:	.res 1
 level_loops:	.res 1
@@ -361,6 +363,9 @@ rooster_crash:
 	jmp	loop
 
 outro_scene:
+	jsr	scroll_until_home
+	jsr	move_rooster_position
+	jsr	move_rooster_sprites
 	jmp	loop
 
 fade_screen:
@@ -857,6 +862,20 @@ scroll_screen:
 	sta	scroll_c
 	rts
 
+scroll_until_home:
+	lda	outro_scroll
+	cmp	#8
+	beq	:+
+	jsr	scroll_screen
+	lda	scroll_f
+	bne	:++
+	inc	outro_scroll
+:
+	lda	#$00
+	sta	rooster_frame
+:
+	rts
+
 clear_memory:
 	lda	#0
 	ldx	#0
@@ -1088,6 +1107,8 @@ start_outro:
 	sta	column_height
 	lda	#$20
 	sta	column_tile
+	lda	#$00
+	sta	outro_scroll
 	rts
 
 produce_random_block:
