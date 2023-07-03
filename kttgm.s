@@ -54,6 +54,7 @@ outro_scroll:	.res 1
 outro_column:	.res 1
 outro_delay:	.res 1
 outro_jumps:	.res 1
+lady_state:	.res 1
 
 level_idx:	.res 1
 level_block:	.res 1
@@ -97,8 +98,8 @@ palette:
 
 .byte $0F, $06, $16, $30
 .byte $0F, $27, $28, $10
-.byte $0F, $0F, $0F, $0F
-.byte $0F, $0F, $0F, $0F
+.byte $0F, $06, $16, $37
+.byte $0F, $06, $16, $17
 
 sprites:
 .byte $10, $10, $05, $08
@@ -132,6 +133,33 @@ sprites_end:
 .byte $10, $36, $04, $00
 .byte $00, $17, $04, $08
 .byte $00, $18, $04, $10
+
+lady_sprites:
+.byte $57, $41, $05, $9F
+.byte $57, $40, $04, $9F
+.byte $5F, $50, $04, $9F
+.byte $5F, $51, $04, $A7
+.byte $57, $41, $45, $C8
+.byte $57, $40, $46, $C8
+.byte $5F, $50, $46, $C8
+.byte $5F, $51, $46, $C0
+.byte $57, $41, $45, $88
+.byte $57, $40, $47, $88
+.byte $5F, $50, $47, $88
+.byte $5F, $51, $47, $80
+lady_mirror:
+.byte $57, $41, $45, $A8
+.byte $57, $40, $44, $A8
+.byte $5F, $50, $44, $A8
+.byte $5F, $51, $44, $A0
+.byte $57, $41, $05, $BF
+.byte $57, $40, $06, $BF
+.byte $5F, $50, $06, $BF
+.byte $5F, $51, $06, $C7
+.byte $57, $41, $05, $7F
+.byte $57, $40, $07, $7F
+.byte $5F, $50, $07, $7F
+.byte $5F, $51, $07, $87
 
 crash_sprites:
 .byte $3D, $3E, $1D, $FF, $FF, $2E, $2D
@@ -276,6 +304,7 @@ OUTRO_WALK_IN	= 22
 
 GAME_OVER	= (game_over_text - title_data)
 SPRITE_BLOCK	= (sprites_end - sprites)
+LADY_BLOCK	= (lady_mirror - lady_sprites)
 MAIN_SPRITES	= SPRITE_BLOCK / 4
 
 nmi:
@@ -531,6 +560,18 @@ copy_sprites_to_oam:
 	inx
 	iny
 	cpx	#SPRITE_BLOCK
+	bne	:-
+	rts
+
+copy_ladies_to_oam:
+	ldx	#0
+	ldy	lady_state
+:
+	lda	lady_sprites, y
+	sta	oam_buffer + 64, x
+	inx
+	iny
+	cpx	#48
 	bne	:-
 	rts
 
@@ -1202,6 +1243,7 @@ start_outro:
 	sta	outro_delay
 	sta	outro_jumps
 	sta	outro_column
+	sta	lady_state
 	rts
 
 produce_random_block:
