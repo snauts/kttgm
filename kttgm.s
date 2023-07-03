@@ -1309,6 +1309,10 @@ fill_outro_column:
 	rts
 
 draw_title_screen:
+	lda	#$00
+	sta	attributes + 0
+	sta	attributes + 2
+
 	lda	#%10001000
 	sta	ppu_ctrl
 
