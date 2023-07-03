@@ -54,6 +54,7 @@ outro_scroll:	.res 1
 outro_column:	.res 1
 outro_delay:	.res 1
 outro_jumps:	.res 1
+outro_input:	.res 1
 lady_state:	.res 1
 
 level_idx:	.res 1
@@ -427,6 +428,7 @@ outro_scene:
 	jsr	scroll_until_home
 	jsr	move_rooster_position
 	jsr	move_rooster_sprites
+	jsr	outro_check_input
 	jmp	loop
 
 fade_screen:
@@ -962,10 +964,25 @@ scroll_until_home:
 :
 	rts
 
+outro_check_input:
+	lda	outro_input
+	beq	:+
+
+	lda	button_last
+	and	#BUTTON_START
+	beq	:+
+	lda     #$00
+	sta	image_ptr
+	lda	#$F0
+	jmp	start_fade
+:
+	rts
+
 show_ladies:
 	lda	outro_delay
 	cmp	#60
 	bne	@wait
+	sta	outro_input
 	jsr	copy_ladies_to_oam
 	rts
 @wait:
@@ -1253,6 +1270,7 @@ start_outro:
 	sta	outro_delay
 	sta	outro_jumps
 	sta	outro_column
+	sta	outro_input
 	sta	lady_state
 	rts
 
