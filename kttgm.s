@@ -989,6 +989,27 @@ select_attributes:
 	rts
 
 get_attribute:
+	pha
+	lda	progress
+	cmp	#4
+	beq	get_outro_attribute
+	pla
+	jmp	get_regular_attribute
+
+get_outro_attribute:
+	pla
+	cpy	#6
+	bcc	:+
+	cpy	#18
+	bcs	:+
+	ora	#(1 << 6)
+	iny
+	iny
+	rts
+:
+	jmp	get_regular_attribute
+
+get_regular_attribute:
 	cpy	column_height
 	bne	:+
 	ora	#(1 << 6)
@@ -1112,7 +1133,7 @@ start_outro:
 	sta	column_height
 	lda	#$20
 	sta	column_tile
-	lda	#$08
+	lda	#$0A
 	sta	outro_scroll
 	rts
 
