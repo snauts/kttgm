@@ -182,7 +182,7 @@
 	(push value samples)))
     (reverse samples)))
 
-(defparameter *step* 1024)
+(defparameter *step* 512)
 
 (defun stuff-audio (out sample)
   (let ((snd 0) (val 0) (bit 0))
@@ -190,7 +190,7 @@
       (setf val (ash val -1))
       (cond ((< snd x)
 	     (incf snd *step*)
-	     (setf val (logior val 128)))
+	     (setf val (logior val #x80)))
 	    (t (decf snd *step*)))
       (incf bit)
       (when (= bit 8)

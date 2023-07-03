@@ -995,6 +995,7 @@ scroll_until_home:
 	lda	#$70
 	sta	outro_note
 	inc	outro_jumps
+	jsr	play_audio_sample
 :
 	rts
 
