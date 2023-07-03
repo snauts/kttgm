@@ -177,7 +177,7 @@
 
 (defun read-crowing ()
   (let ((samples nil))
-    (with-open-file (in "rooster.raw" :element-type '(signed-byte 8))
+    (with-open-file (in "rooster.raw" :element-type '(signed-byte 16))
       (loop for value = (read-byte in nil :eof) until (eq value :eof) do
 	(push value samples)))
     (reverse samples)))
