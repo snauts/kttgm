@@ -429,6 +429,7 @@ outro_scene:
 	jsr	scroll_until_home
 	jsr	move_rooster_position
 	jsr	move_rooster_sprites
+	jsr	animate_rooster_beak
 	jsr	outro_check_input
 	jmp	loop
 
@@ -1838,5 +1839,18 @@ update_home:
 	bne	:-
 	sty	outro_column
 
+@exit:
+	rts
+
+animate_rooster_beak:
+	lda	outro_input
+	beq	@exit
+
+	ldy	#$20
+	lda	lady_state
+	beq	:+
+	ldy	#$21
+:
+	sty	oam_buffer + 9
 @exit:
 	rts
