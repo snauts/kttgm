@@ -279,6 +279,10 @@ martas_levelis:
 tall_fence_data:
 .byte $08, $08, $18, $20, $10, $24, $18, $20
 
+.segment "SAMPLE"
+
+crowing:
+
 .segment "CODE"
 
 PPUCTRL		= $2000
