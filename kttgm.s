@@ -876,6 +876,7 @@ scroll_until_home:
 	lda	scroll_7
 	bne	:++
 	dec	outro_scroll
+	rts
 :
 	lda	#$00
 	sta	rooster_frame
