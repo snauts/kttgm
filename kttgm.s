@@ -169,6 +169,7 @@ level_fns:
 .word produce_looped_level
 .word produce_looped_level
 .word produce_looped_level
+.word start_outro
 .word produce_random_block
 
 level_inputs:
@@ -176,6 +177,7 @@ level_inputs:
 .word medium_pit_data
 .word martas_levelis
 .word tall_fence_data
+.word $0000
 .word $0000
 
 abyss:
@@ -327,6 +329,8 @@ spin:	cmp	counter
 	beq	rooster_game
 	cmp	#03
 	beq	rooster_crash
+	cmp	#04
+	beq	outro_scene
 
 	jmp	fade_screen
 
@@ -354,6 +358,9 @@ rooster_crash:
 	jsr	use_crash_sprites
 	jsr	adjust_sprite_positions
 	jsr	crash_epilogue
+	jmp	loop
+
+outro_scene:
 	jmp	loop
 
 fade_screen:
@@ -1072,6 +1079,15 @@ update_ppu:
 	bne	:-
 
 bad_ppu_data:
+	rts
+
+start_outro:
+	lda	#$04
+	sta	progress
+	lda	#$12
+	sta	column_height
+	lda	#$20
+	sta	column_tile
 	rts
 
 produce_random_block:
