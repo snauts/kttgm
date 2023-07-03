@@ -282,6 +282,7 @@ tall_fence_data:
 .segment "SAMPLE"
 
 crowing:
+.include "crowing.h"
 
 .segment "CODE"
 
@@ -305,6 +306,9 @@ NOISE_VOL	= $400C
 NOISE_LO	= $400E
 NOISE_HI	= $400F
 DMC_FREQ	= $4010
+DMC_RAW		= $4011
+DMC_START	= $4012
+DMC_LEN		= $4013
 OAMDMA		= $4014
 SND_CHN		= $4015
 JOY1		= $4016
@@ -1904,4 +1908,19 @@ release_rooster_note:
 	lda	#$50
 	sta	oam_buffer + 63
 
+	rts
+
+play_audio_sample:
+	lda	#$0F
+	sta	SND_CHN
+	lda	#$0A
+	sta	DMC_FREQ
+	lda	#$00
+	sta	DMC_RAW
+	lda	#$00
+	sta	DMC_START
+	lda	#197
+	sta	DMC_LEN
+	lda	#$1F
+	sta	SND_CHN
 	rts
