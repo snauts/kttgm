@@ -247,6 +247,7 @@ NEXT_IDX	= 5
 FALLING		= 12
 BUMPING		= 0
 LIFE_OFFSET	= 128
+OUTRO_WALK_IN	= 11
 
 GAME_OVER	= (game_over_text - title_data)
 SPRITE_BLOCK	= (sprites_end - sprites)
@@ -997,16 +998,38 @@ get_attribute:
 	jmp	get_regular_attribute
 
 get_outro_attribute:
-	pla
+	lda	outro_scroll
+	cmp	#OUTRO_WALK_IN - 0
+	beq	@regular
+	cmp	#OUTRO_WALK_IN - 1
+	beq	@roof
+	cmp	#OUTRO_WALK_IN - 9
+	beq	@roof
+	bcc	@regular
+
 	cpy	#6
-	bcc	:+
+	bcc	@regular
 	cpy	#18
-	bcs	:+
+	bcs	@regular
+	cpy	#16
+	bne	@brown
+	pla
 	ora	#(1 << 6)
 	iny
 	iny
 	rts
-:
+@roof:
+	cpy	#6
+	bne	@regular
+@brown:
+	pla
+	ora	#(2 << 6)
+	iny
+	iny
+	rts
+
+@regular:
+	pla
 	jmp	get_regular_attribute
 
 get_regular_attribute:
@@ -1133,7 +1156,7 @@ start_outro:
 	sta	column_height
 	lda	#$20
 	sta	column_tile
-	lda	#$0A
+	lda	#OUTRO_WALK_IN
 	sta	outro_scroll
 	rts
 
