@@ -1914,13 +1914,13 @@ release_rooster_note:
 play_audio_sample:
 	lda	#$0F
 	sta	SND_CHN
-	lda	#$0A
+	lda	#$0C
 	sta	DMC_FREQ
 	lda	#$00
 	sta	DMC_RAW
 	lda	#$00
 	sta	DMC_START
-	lda	#197
+	lda	#255
 	sta	DMC_LEN
 	lda	#$1F
 	sta	SND_CHN
