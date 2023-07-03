@@ -949,7 +949,7 @@ scroll_until_home:
 
 	lda	outro_jumps
 	cmp	#3
-	beq	:+
+	beq	show_ladies
 	inc	outro_delay
 	lda	outro_delay
 	cmp	#120
@@ -960,6 +960,16 @@ scroll_until_home:
 	jsr	jump_rooster
 	inc	outro_jumps
 :
+	rts
+
+show_ladies:
+	lda	outro_delay
+	cmp	#60
+	bne	@wait
+	jsr	copy_ladies_to_oam
+	rts
+@wait:
+	inc	outro_delay
 	rts
 
 clear_memory:
