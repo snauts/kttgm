@@ -1392,7 +1392,11 @@ load_level:
 	inc	level_idx
 	inc	level_idx
 
+	lda	sky_offset
+	cmp	#1
+	beq	:+
 	dec	sky_offset
+:
 	jsr	reset_level_counters
 	rts
 
