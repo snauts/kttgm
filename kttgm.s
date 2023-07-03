@@ -158,6 +158,9 @@ game_over_text:
 .byte $0B, $21, $8B, $46, $2E, $2D, $2A, $00, $3F, $4F, $2A, $28
 .byte $00
 
+outro_palette:
+.byte $08, $18, $09
+
 random_sequence:
 .byte $8D, $DC, $3B, $5C, $59, $18, $52, $AA
 .byte $37, $B3, $11, $A1, $FA, $59, $E4, $E7
@@ -363,6 +366,9 @@ rooster_crash:
 	jmp	loop
 
 outro_scene:
+	jsr	update_sky_tiles_on_one
+	jsr	update_outro_palette
+	jsr	fill_outro_column
 	jsr	scroll_until_home
 	jsr	move_rooster_position
 	jsr	move_rooster_sprites
@@ -864,12 +870,11 @@ scroll_screen:
 
 scroll_until_home:
 	lda	outro_scroll
-	cmp	#8
 	beq	:+
 	jsr	scroll_screen
 	lda	scroll_f
 	bne	:++
-	inc	outro_scroll
+	dec	outro_scroll
 :
 	lda	#$00
 	sta	rooster_frame
@@ -1107,7 +1112,7 @@ start_outro:
 	sta	column_height
 	lda	#$20
 	sta	column_tile
-	lda	#$00
+	lda	#$08
 	sta	outro_scroll
 	rts
 
@@ -1215,6 +1220,19 @@ palette_flash:
 :
 	stx	ppu_data + 2
 	dec	flash
+@exit:
+	rts
+
+fill_outro_column:
+	lda	outro_scroll
+	beq	@exit
+	lda	scroll_7
+	bne	@exit
+	lda	column_tile
+	and	#$03
+	ora	#$20
+	sta	column_tile
+	jsr	update_column
 @exit:
 	rts
 
@@ -1593,5 +1611,29 @@ update_sky_tiles_on_one:
 	cmp	#1
 	bne	@exit
 	jsr	update_sky_tiles
+@exit:
+	rts
+
+update_outro_palette:
+	lda	scroll_7
+	cmp	#2
+	bcc	@exit
+	cmp	#5
+	bcs	@exit
+
+	sec
+	sbc	#2
+	tax
+	clc
+	adc	#5
+	tay
+
+	lda	#$01
+	sta	ppu_size
+	lda	#$3F
+	sta	ppu_data + 0
+	sty	ppu_data + 1
+	lda	outro_palette, x
+	sta	ppu_data + 2
 @exit:
 	rts
