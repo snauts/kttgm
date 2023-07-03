@@ -229,12 +229,14 @@ level_fns:
 .word produce_looped_level
 .word produce_looped_level
 .word produce_looped_level
+.word produce_looped_level
 .word start_outro
 .word produce_random_block
 
 level_inputs:
 .word small_bump_data
 .word medium_pit_data
+.word mound_of_mud_data
 .word martas_levelis
 .word tall_fence_data
 .word $0000
@@ -244,10 +246,15 @@ abyss:
 .byte $FF, $04, $1A, $20
 
 small_bump_data:
-.byte $08, $08, $10, $24, $12, $20, $12, $20
+.byte $08, $08, $12, $20, $12, $20, $10, $24
 
 medium_pit_data:
-.byte $08, $08, $18, $20, $12, $20, $12, $20
+.byte $08, $08, $12, $20, $12, $20, $18, $20
+
+mound_of_mud_data:
+.byte $03, $14
+.byte $12, $20, $10, $20, $0E, $20, $0C, $20, $0A, $20
+.byte $0A, $20, $0C, $20, $0E, $20, $10, $20, $12, $20
 
 martas_levelis:
 .byte $06, $0E
@@ -1574,7 +1581,7 @@ reset_level_counters:
 	lda	#0
 	sta	level_done
 	sta	level_block
-	lda	#1
+	lda	#0
 	sta	level_loops
 	rts
 
