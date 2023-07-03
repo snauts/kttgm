@@ -52,6 +52,8 @@ lives:		.res 1
 
 outro_scroll:	.res 1
 outro_column:	.res 1
+outro_delay:	.res 1
+outro_jumps:	.res 1
 
 level_idx:	.res 1
 level_block:	.res 1
@@ -903,6 +905,19 @@ scroll_until_home:
 :
 	lda	#$00
 	sta	rooster_frame
+
+	lda	outro_jumps
+	cmp	#3
+	beq	:+
+	inc	outro_delay
+	lda	outro_delay
+	cmp	#120
+	bne	:+
+	lda	#$00
+	sta	outro_delay
+	lda	#VELOCITY
+	jsr	jump_rooster
+	inc	outro_jumps
 :
 	rts
 
@@ -1184,6 +1199,8 @@ start_outro:
 	lda	#OUTRO_WALK_IN
 	sta	outro_scroll
 	lda	#$00
+	sta	outro_delay
+	sta	outro_jumps
 	sta	outro_column
 	rts
 
