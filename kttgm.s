@@ -50,6 +50,7 @@ flash:		.res 1
 pause:		.res 1
 lives:		.res 1
 
+outro_extend:	.res 1
 outro_scroll:	.res 1
 outro_column:	.res 1
 outro_delay:	.res 1
@@ -1258,12 +1259,10 @@ bad_ppu_data:
 	rts
 
 start_outro:
+	dec	outro_extend
+	bne	:+
 	lda	#$04
 	sta	progress
-	lda	#$12
-	sta	column_height
-	lda	#$20
-	sta	column_tile
 	lda	#OUTRO_WALK_IN
 	sta	outro_scroll
 	lda	#$00
@@ -1272,6 +1271,11 @@ start_outro:
 	sta	outro_column
 	sta	outro_input
 	sta	lady_state
+:
+	lda	#$12
+	sta	column_height
+	lda	#$20
+	sta	column_tile
 	rts
 
 produce_random_block:
@@ -1536,6 +1540,8 @@ launch_game:
 	jsr	start_fade
 	lda	#$14
 	sta	sky_offset
+	lda	#$08
+	sta	outro_extend
 :
 	rts
 
