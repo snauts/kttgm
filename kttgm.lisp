@@ -175,6 +175,13 @@
     (save-note-values out)
     (save-frequencies out)))
 
+(defun read-crowing ()
+  (let ((samples nil))
+    (with-open-file (in "rooster.raw" :element-type '(signed-byte 8))
+      (loop for value = (read-byte in nil :eof) until (eq value :eof) do
+	(push value samples)))
+    (reverse samples)))
+
 (save-sprites)
 (save-notes)
 (quit)
