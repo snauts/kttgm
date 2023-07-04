@@ -246,6 +246,7 @@ level_fns:
 .word produce_looped_level
 .word produce_looped_level
 .word produce_looped_level
+.word produce_looped_level
 .word start_outro
 .word produce_random_block
 
@@ -258,6 +259,7 @@ level_inputs:
 .word pyramids_of_dirt
 .word martas_levelis
 .word slippery_slopes
+.word cathedral_of_sin
 .word hurdle_splash_data
 .word leap_of_faith
 .word fathers_and_sons
@@ -305,6 +307,13 @@ longest_hike:
 .byte $0A, $24, $0C, $24, $0E, $24, $10, $24, $12, $24
 .byte $14, $24, $16, $24, $18, $24, $1A, $24, $1A, $20
 .byte $16, $20
+
+cathedral_of_sin:
+.byte $01, $2E, $12, $20, $16, $20, $16, $24, $10, $24
+.byte $12, $20, $12, $24, $0C, $24, $0E, $20, $0E, $24
+.byte $08, $24, $0A, $20, $0A, $24, $0A, $20, $08, $24
+.byte $0E, $24, $0E, $20, $0C, $24, $12, $24, $12, $20
+.byte $10, $24, $16, $24, $16, $20
 
 fathers_and_sons:
 .byte $04, $12, $12, $20, $14, $24, $12, $24, $16, $20
