@@ -247,6 +247,7 @@ level_fns:
 .word produce_looped_level
 .word produce_looped_level
 .word produce_looped_level
+.word produce_looped_level
 .word start_outro
 .word produce_random_block
 
@@ -255,6 +256,7 @@ level_inputs:
 .word medium_pit_data
 .word mound_of_mud_data
 .word longest_hike
+.word cliff_of_boredom
 .word towers_and_moats
 .word pyramids_of_dirt
 .word martas_levelis
@@ -307,6 +309,10 @@ longest_hike:
 .byte $0A, $24, $0C, $24, $0E, $24, $10, $24, $12, $24
 .byte $14, $24, $16, $24, $18, $24, $1A, $24, $1A, $20
 .byte $16, $20
+
+cliff_of_boredom:
+.byte $04, $0E, $12, $20, $10, $20, $1A, $20, $1A, $20
+.byte $16, $24, $14, $20
 
 cathedral_of_sin:
 .byte $01, $2E, $12, $20, $16, $20, $16, $24, $10, $24
