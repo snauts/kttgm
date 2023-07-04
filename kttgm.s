@@ -247,13 +247,13 @@ level_fns:
 .word produce_random_block
 
 level_inputs:
-.word slippery_slopes
 .word small_bump_data
 .word medium_pit_data
 .word mound_of_mud_data
 .word towers_and_moats
 .word pyramids_of_dirt
 .word martas_levelis
+.word slippery_slopes
 .word hurdle_splash_data
 .word grass_and_stump
 .word castles_of_despair
