@@ -90,8 +90,8 @@ var_data:
 .byte $DD, $1E, $02, $01
 .byte $14
 ;; music_cfg
-.byte $10, $01, $A0, $08
-.byte $30, $03, $60, $08
+.byte $10, $01, $A0, $00
+.byte $30, $03, $60, $00
 
 palette:
 .byte $0F, $03, $13, $23
@@ -984,6 +984,9 @@ scroll_until_home:
 	lda	outro_jumps
 	cmp	#3
 	beq	show_ladies
+
+	jsr	shush_music
+
 	inc	outro_delay
 	lda	outro_delay
 	cmp	#120
@@ -1017,10 +1020,16 @@ show_ladies:
 	lda	outro_delay
 	cmp	#60
 	bne	@wait
+
+	lda	#$00
+	sta	music_cfg + 3
+	sta	music_cfg + 7
+
 	sta	outro_input
 	jsr	copy_ladies_to_oam
 	rts
 @wait:
+	jsr	shush_music
 	inc	outro_delay
 	rts
 
@@ -1645,11 +1654,12 @@ play_channel:
 
 	jsr	produce_vol
 	sta	SQ1_VOL, X
-	lda	music_cfg + 3, X
+	lda	#$08
 	sta	SQ1_SWEEP, X
 	lda	music_notes + 0, Y
 	sta	SQ1_LO, X
 	lda	music_notes + 1, Y
+	ora	music_cfg + 3, X
 	sta	SQ1_HI, X
 
 	cpx	#0
@@ -1924,4 +1934,21 @@ play_audio_sample:
 	sta	DMC_LEN
 	lda	#$1F
 	sta	SND_CHN
+	rts
+
+shush_music:
+	lda	#$F8
+	sta	music_cfg + 3
+	sta	music_cfg + 7
+
+	lda	SQ1_VOL
+	and	#$C0
+	ora	#$12
+	sta	SQ1_VOL
+
+	lda	SQ2_VOL
+	and	#$C0
+	ora	#$12
+	sta	SQ2_VOL
+
 	rts
