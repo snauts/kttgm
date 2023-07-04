@@ -233,6 +233,7 @@ level_fns:
 .word produce_looped_level
 .word produce_looped_level
 .word produce_looped_level
+.word produce_looped_level
 .word start_outro
 .word produce_random_block
 
@@ -241,6 +242,7 @@ level_inputs:
 .word medium_pit_data
 .word mound_of_mud_data
 .word martas_levelis
+.word hurdle_splash_data
 .word tall_fence_data
 .word blocks_of_pain
 .word peak_of_doom
@@ -255,6 +257,9 @@ small_bump_data:
 
 medium_pit_data:
 .byte $08, $08, $12, $20, $12, $20, $18, $20
+
+hurdle_splash_data:
+.byte $06, $0A, $12, $20, $0E, $24, $18, $20, $18, $20
 
 mound_of_mud_data:
 .byte $03, $14
