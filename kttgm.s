@@ -244,6 +244,7 @@ level_fns:
 .word produce_looped_level
 .word produce_looped_level
 .word produce_looped_level
+.word produce_looped_level
 .word start_outro
 .word produce_random_block
 
@@ -257,6 +258,7 @@ level_inputs:
 .word slippery_slopes
 .word hurdle_splash_data
 .word leap_of_faith
+.word fathers_and_sons
 .word grass_and_stump
 .word castles_of_despair
 .word tall_fence_data
@@ -293,6 +295,10 @@ leap_of_faith:
 .byte $03, $1C, $12, $20, $12, $24, $0E, $20, $0E, $24
 .byte $0A, $20, $0A, $24, $06, $20, $06, $24, $06, $24
 .byte $1A, $20, $1A, $20, $14, $24, $1A, $20
+
+fathers_and_sons:
+.byte $04, $12, $12, $20, $14, $24, $12, $24, $16, $20
+.byte $12, $20, $10, $24, $12, $24, $0E, $20
 
 towers_and_moats:
 .byte $04, $12, $12, $20, $16, $24, $0E, $24, $16, $24
