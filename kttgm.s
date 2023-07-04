@@ -242,10 +242,12 @@ level_fns:
 .word produce_looped_level
 .word produce_looped_level
 .word produce_looped_level
+.word produce_looped_level
 .word start_outro
 .word produce_random_block
 
 level_inputs:
+.word slippery_slopes
 .word small_bump_data
 .word medium_pit_data
 .word mound_of_mud_data
@@ -277,6 +279,9 @@ pyramids_of_dirt:
 grass_and_stump:
 .byte $04, $12, $12, $24, $10, $24, $12, $24, $10, $24
 .byte $12, $24, $10, $24, $12, $24, $0C, $20
+
+slippery_slopes:
+.byte $06, $0C, $12, $20, $14, $24, $18, $20, $14, $24, $12, $24
 
 castles_of_despair:
 .byte $06, $0A, $12, $20, $0C, $24, $0E, $20, $0C, $24
