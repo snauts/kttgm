@@ -299,7 +299,8 @@ towers_and_moats:
 .byte $10, $20, $16, $24, $0C, $24, $16, $24
 
 hurdle_splash_data:
-.byte $06, $0A, $12, $20, $0E, $24, $18, $20, $18, $20
+.byte $06, $0C, $12, $20, $12, $24, $0E, $24, $18, $20
+.byte $18, $20
 
 mound_of_mud_data:
 .byte $03, $14
