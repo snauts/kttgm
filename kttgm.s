@@ -1025,6 +1025,7 @@ show_ladies:
 	sta	music_cfg + 3
 	sta	music_cfg + 7
 
+	lda	#$60
 	sta	outro_input
 	jsr	copy_ladies_to_oam
 	rts
