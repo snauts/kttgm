@@ -241,6 +241,7 @@ level_fns:
 .word produce_looped_level
 .word produce_looped_level
 .word produce_looped_level
+.word produce_looped_level
 .word start_outro
 .word produce_random_block
 
@@ -252,6 +253,7 @@ level_inputs:
 .word pyramids_of_dirt
 .word martas_levelis
 .word hurdle_splash_data
+.word grass_and_stump
 .word castles_of_despair
 .word tall_fence_data
 .word blocks_of_pain
@@ -271,6 +273,10 @@ medium_pit_data:
 pyramids_of_dirt:
 .byte $04, $12, $12, $20, $10, $24, $0E, $24, $0C, $24
 .byte $0E, $24, $10, $24, $12, $20, $12, $20
+
+grass_and_stump:
+.byte $04, $12, $12, $24, $10, $24, $12, $24, $10, $24
+.byte $12, $24, $10, $24, $12, $24, $0C, $20
 
 castles_of_despair:
 .byte $06, $0A, $12, $20, $0C, $24, $0E, $20, $0C, $24
