@@ -155,7 +155,7 @@
   ))
 
 (defun get-cpu-freq ()
-  (/ (if *pal* 1662607.0 1789773.0) 16))
+  (/ (if (= *pal* 1) 1662607.0 1789773.0) 16))
 
 (defun convert-note (note)
   (round (- (/ (get-cpu-freq) note) 1)))

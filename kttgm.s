@@ -13,6 +13,10 @@
 .segment "TILES"
 .incbin "kttgm.chr"
 
+.if PAL=1
+.out "Hey PAL!"
+.endif
+
 .segment "ZEROPAGE"
 ppu_data:	.res 32
 platforms:	.res 16
