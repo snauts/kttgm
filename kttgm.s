@@ -243,6 +243,7 @@ level_fns:
 .word produce_looped_level
 .word produce_looped_level
 .word produce_looped_level
+.word produce_looped_level
 .word start_outro
 .word produce_random_block
 
@@ -255,6 +256,7 @@ level_inputs:
 .word martas_levelis
 .word slippery_slopes
 .word hurdle_splash_data
+.word leap_of_faith
 .word grass_and_stump
 .word castles_of_despair
 .word tall_fence_data
@@ -281,10 +283,16 @@ grass_and_stump:
 .byte $12, $24, $10, $24, $12, $24, $0C, $20
 
 slippery_slopes:
-.byte $06, $0C, $12, $20, $14, $24, $18, $20, $14, $24, $12, $24
+.byte $06, $0C, $12, $20, $14, $24, $18, $20, $14, $24
+.byte $12, $24
 
 castles_of_despair:
 .byte $06, $0A, $12, $20, $0C, $24, $0E, $20, $0C, $24
+
+leap_of_faith:
+.byte $03, $1C, $12, $20, $12, $24, $0E, $20, $0E, $24
+.byte $0A, $20, $0A, $24, $06, $20, $06, $24, $06, $24
+.byte $1A, $20, $1A, $20, $14, $24, $1A, $20
 
 towers_and_moats:
 .byte $04, $12, $12, $20, $16, $24, $0E, $24, $16, $24
