@@ -283,6 +283,7 @@ FALLING		= 12
 BUMPING		= 0
 LIFE_OFFSET	= 128
 OUTRO_WALK_IN	= 22
+NORMAL_LEVELS	= 13
 
 GAME_OVER	= (game_over_text - title_data)
 SPRITE_BLOCK	= (sprites_end - sprites)
@@ -1321,6 +1322,12 @@ produce_block:
 	lda	current_input + 0
 	ora	current_input + 1
 	beq	@the_end
+	lda	gold_mode
+	bne	@next
+	lda	level_idx
+	cmp	#(2 * (NORMAL_LEVELS + 1))
+	beq	@the_end
+@next:
 	jmp	produce_looped_level
 @the_end:
 	jmp	start_outro
