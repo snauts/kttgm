@@ -1831,7 +1831,6 @@ ck_sound:
 
 level_complete_sound:
 	ldx	#$8F
-	stx	SQ2_VOL
 	stx	SQ1_VOL
 
 	pha
@@ -1840,12 +1839,10 @@ level_complete_sound:
 	asl
 	asl
 	asl
-	sta	SQ2_LO
 	sta	SQ1_LO
 	pla
 
 	ldx	#$0
-	stx	SQ2_HI
 	stx	SQ1_HI
 	rts
 
