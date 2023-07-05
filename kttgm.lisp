@@ -252,11 +252,21 @@
 	(push line level)))
     (level-output repeat (generate-heights (reverse level)))))
 
+(defun save-chunk (out list-of-8)
+  (format out ".byte ")
+  (print-asm-hex out "2" list-of-8)
+  (format out "~%"))
+
+(defun save-in-chunks (out list)
+  (cond ((> (length list) 8)
+	 (save-chunk out (subseq list 0 8))
+	 (save-in-chunks out (subseq list 8)))
+	(t (save-chunk out list))))
+
 (defun save-level (out level i)
   (format out "level~A:~%" i)
-  (format out ".byte ")
-  (print-asm-hex out "2" level)
-  (format out "~%~%"))
+  (save-in-chunks out level)
+  (format out "~%"))
 
 (defun save-levels ()
   (with-open-file (out "levels.h" :if-exists :supersede :direction :output)

@@ -14,5 +14,4 @@ pal:
 	make PAL=1 build
 
 clean:
-	rm -f kttgm.o kttgm.nes kttgm.ppm kttgm.chr kttgm.fasl \
-		kttgm.fdb notes.h
+	rm -f kttgm.o kttgm.nes kttgm.ppm kttgm.chr kttgm.fasl kttgm.fdb *.h
