@@ -274,10 +274,6 @@
       (dotimes (i (length all-levels))
 	(format out ".word level~A~%" i))
       (format out ".word $0000~%~%")
-      (format out "level_fns:~%")
-      (dotimes (i (length all-levels))
-	(format out ".word produce_looped_level~%"))
-      (format out ".word start_outro~%~%")
       (dotimes (i (length all-levels))
 	(save-level out (elt all-levels i) i)))))
 

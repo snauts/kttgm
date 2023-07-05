@@ -68,7 +68,6 @@ level_idx:	.res 1
 level_block:	.res 1
 level_loops:	.res 1
 level_done:	.res 1
-current_fn:	.res 2
 current_input:	.res 2
 
 var_start:
@@ -1318,9 +1317,14 @@ produce_looped_level:
 
 produce_block:
 	ldx	level_done
-	bne	:+
-	jmp	(current_fn)
-:
+	bne	@done
+	lda	current_input + 0
+	ora	current_input + 1
+	beq	@the_end
+	jmp	produce_looped_level
+@the_end:
+	jmp	start_outro
+@done:
 	inc	level_done
 	cpx	#10
 	bcc	:+
@@ -1533,11 +1537,6 @@ launch_game:
 
 load_level:
 	ldx	level_idx
-
-	lda	level_fns + 0, X
-	sta	current_fn + 0
-	lda	level_fns + 1, X
-	sta	current_fn + 1
 
 	lda	level_inputs + 0, X
 	sta	current_input + 0
