@@ -75,7 +75,6 @@ rooster_x:	.res 1
 rooster_y:	.res 1
 rooster_frame:	.res 1
 ppu_ctrl:	.res 1
-seed:		.res 1
 ppu_size:	.res 1
 in_the_air:	.res 1
 gravity:	.res 1
@@ -91,8 +90,7 @@ oam_buffer:	.res 256
 .segment "RODATA"
 var_data:
 .byte $38, $00, $C0, $80
-.byte $DD, $1E, $02, $01
-.byte $14
+.byte $1E, $02, $01, $14
 ;; music_cfg
 .byte $10, $01, $A0, $00
 .byte $30, $03, $60, $00
@@ -250,7 +248,6 @@ level_fns:
 ;; .word produce_looped_level
 ;; .word produce_looped_level
 .word start_outro
-.word produce_random_block
 
 level_inputs:
 .word small_bump_data
@@ -272,7 +269,6 @@ level_inputs:
 .word tall_fence_data
 ;; .word blocks_of_pain
 ;; .word peak_of_doom
-.word $0000
 .word $0000
 
 abyss:
@@ -1405,31 +1401,6 @@ start_outro:
 	sta	column_height
 	lda	#$20
 	sta	column_tile
-	rts
-
-produce_random_block:
-	jsr	get_random_number
-	clc
-	and	#$03
-	asl
-	adc	#$0C
-	sta	column_height
-	jsr	get_random_number
-	and	#$04
-	ora	#$20
-	sta	column_tile
-	rts
-
-get_random_number:
-	lda	seed
-	beq	do_eor
-	asl
-	beq	no_eor
-	bcc	no_eor
-do_eor:
-	eor	#$1D
-no_eor:
-	sta	seed
 	rts
 
 produce_looped_level:
