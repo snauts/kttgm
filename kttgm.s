@@ -47,6 +47,7 @@ music_delay:	.res 1
 rooster_py:	.res 1
 image_ptr:	.res 1
 music_idx:	.res 1
+gold_mode:	.res 1
 crashed:	.res 1
 delta_x:	.res 1
 delta_y:	.res 1
@@ -271,6 +272,7 @@ OAM_T		= $01
 
 BUTTON_A	= %00000001
 BUTTON_B	= %00000010
+BUTTON_SELECT	= %00000100
 BUTTON_START	= %00001000
 BUTTON_UP	= %00010000
 BUTTON_DOWN	= %00100000
@@ -481,6 +483,8 @@ start_crash:
 	rts
 
 take_life:
+	lda	gold_mode
+	bne	:+
 	dec	lives
 	lda	lives
 	cmp	#$FF
@@ -894,6 +898,16 @@ control_rooster:
 	beq	:+
 	lda	#VELOCITY
 	jsr	jump_rooster
+:
+	lda	button_last
+	and	#BUTTON_SELECT
+	beq	:+
+	lda	#1
+	sta	gold_mode
+	lda	#5
+	sta	oam_buffer + 130
+	sta	oam_buffer + 134
+	sta	oam_buffer + 138
 :
 	rts
 
@@ -1504,6 +1518,7 @@ launch_game:
 	sta	lives
 	lda	#0
 	sta	level_idx
+	sta	gold_mode
 	jsr	load_level
 	jsr	restart_music
 	jsr	setup_lives
