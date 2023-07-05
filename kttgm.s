@@ -243,12 +243,12 @@ level_fns:
 .word produce_looped_level
 .word produce_looped_level
 .word produce_looped_level
-.word produce_looped_level
-.word produce_looped_level
-.word produce_looped_level
-.word produce_looped_level
-.word produce_looped_level
-.word produce_looped_level
+;; .word produce_looped_level
+;; .word produce_looped_level
+;; .word produce_looped_level
+;; .word produce_looped_level
+;; .word produce_looped_level
+;; .word produce_looped_level
 .word start_outro
 .word produce_random_block
 
@@ -257,21 +257,21 @@ level_inputs:
 .word medium_pit_data
 .word mound_of_mud_data
 .word longest_hike
-.word cliff_of_boredom
+;; .word cliff_of_boredom
 .word towers_and_moats
 .word pyramids_of_dirt
 .word martas_levelis
-.word alternating_chaos
+;; .word alternating_chaos
 .word slippery_slopes
 .word cathedral_of_sin
-.word hurdle_splash_data
-.word leap_of_faith
+;; .word hurdle_splash_data
+;; .word leap_of_faith
 .word fathers_and_sons
 .word grass_and_stump
 .word castles_of_despair
 .word tall_fence_data
-.word blocks_of_pain
-.word peak_of_doom
+;; .word blocks_of_pain
+;; .word peak_of_doom
 .word $0000
 .word $0000
 
@@ -305,12 +305,10 @@ leap_of_faith:
 .byte $1A, $20, $1A, $20, $14, $24, $1A, $20
 
 longest_hike:
-.byte $01, $34, $12, $20, $1A, $20, $10, $20, $1A, $20
+.byte $01, $26, $12, $20, $1A, $20, $10, $20, $1A, $20
 .byte $0E, $20, $1A, $20, $0C, $20, $1A, $20, $0A, $20
 .byte $1A, $20, $08, $20, $1A, $20, $06, $20, $08, $24
-.byte $0A, $24, $0C, $24, $0E, $24, $10, $24, $12, $24
-.byte $14, $24, $16, $24, $18, $24, $1A, $24, $1A, $20
-.byte $16, $20
+.byte $0A, $24, $0C, $24, $0E, $24, $10, $24
 
 cliff_of_boredom:
 .byte $04, $0E, $12, $20, $10, $20, $1A, $20, $1A, $20
