@@ -203,6 +203,76 @@
     (stuff-audio out (read-crowing))
     (format out "0~%")))
 
+(defun max-length (level)
+  (reduce #'max (mapcar #'length level)))
+
+(defun is-ground (level i j)
+  (and (> (length (elt level j)) (1+ i))
+       (eq #\# (elt (elt level j) (1+ i)))))
+
+(defun get-height (level i)
+  (dotimes (j (length level))
+    (when (is-ground level i j)
+      (return-from get-height j))))
+
+(defun safe-guard (x)
+  (cond ((or (< x 6) (> x 26))
+	 (format t "ERROR: level tiles out of screen~%")
+	 (quit :unix-status 1))
+	(t x)))
+
+(defun generate-tiles (base height-map)
+  (mapcar (lambda (x) (safe-guard (- 18 (* 2 (- base x))))) height-map))
+
+(defun insert-types (tiles)
+  (unless (null tiles)
+    (cons (first tiles)
+	  (if (and (rest tiles) (eq (first tiles) (second tiles)))
+	      (cons #x20 (insert-types (nthcdr 2 tiles)))
+	      (cons #x24 (insert-types (rest tiles)))))))
+
+(defun generate-heights (level)
+  (let ((base-offset 0))
+    (loop while (not (eq #\= (elt (elt level base-offset) 0))) do
+      (incf base-offset))
+    (let ((height-map nil))
+      (dotimes (i (1- (max-length level)))
+	(push (get-height level i) height-map))
+      (insert-types (generate-tiles base-offset (reverse height-map))))))
+
+(defun level-output (repeat map)
+  (append (list repeat (+ 2 (length map))) map))
+
+(defun read-level (filename)
+  (let ((level nil) (repeat nil))
+    (with-open-file (in filename :direction :input)
+      (read in)
+      (setf repeat (read in))
+      (loop for line = (read-line in nil :eof) until (eq line :eof) do
+	(push line level)))
+    (level-output repeat (generate-heights (reverse level)))))
+
+(defun save-level (out level i)
+  (format out "level~A:~%" i)
+  (format out ".byte ")
+  (print-asm-hex out "2" level)
+  (format out "~%~%"))
+
+(defun save-levels ()
+  (with-open-file (out "levels.h" :if-exists :supersede :direction :output)
+    (let ((all-levels (mapcar #'read-level (directory "levels/*.txt"))))
+      (format out "level_inputs:~%")
+      (dotimes (i (length all-levels))
+	(format out ".word level~A~%" i))
+      (format out ".word $0000~%~%")
+      (format out "level_fns:~%")
+      (dotimes (i (length all-levels))
+	(format out ".word produce_looped_level~%"))
+      (format out ".word start_outro~%~%")
+      (dotimes (i (length all-levels))
+	(save-level out (elt all-levels i) i)))))
+
+(save-levels)
 (save-crowing)
 (save-sprites)
 (save-notes)
