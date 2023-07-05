@@ -206,13 +206,12 @@
 (defun max-length (level)
   (reduce #'max (mapcar #'length level)))
 
-(defun is-ground (level i j)
-  (and (> (length (elt level j)) (1+ i))
-       (eq #\# (elt (elt level j) (1+ i)))))
+(defun is-ground (slice i)
+  (and (> (length slice) i) (eq #\# (elt slice i))))
 
 (defun get-height (level i)
   (dotimes (j (length level))
-    (when (is-ground level i j)
+    (when (is-ground (elt level j) (1+ i))
       (return-from get-height j))))
 
 (defun safe-guard (x)
