@@ -94,7 +94,8 @@
 				   :direction :output)
     (save-picture out (read-ppm))))
 
-(defparameter *tempo* 12)
+(defun get-tempo ()
+  (if (= *pal* 1) 10 12))
 
 (defparameter *note-values*
   '((1 1 1 1 1 1 1 1 2 1 1 3 1)
@@ -104,7 +105,7 @@
     (0)))
 
 (defun value-to-ticks (value)
-  (* value *tempo*))
+  (* value (get-tempo)))
 
 (defun print-asm-hex (out pad values)
   (format out (concatenate 'string "~{$~" pad ",'0X~^,~}") values))
