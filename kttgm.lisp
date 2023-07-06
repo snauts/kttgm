@@ -35,10 +35,13 @@
 (defun lookup-color (color palette)
   (position color palette :test #'equal))
 
+(defun failure (&rest msg)
+  (apply #'format (cons t msg))
+  (quit :unix-status 1))
+
 (defun color-to-index (sprite n palette)
   (when (> (length palette) 4)
-    (format t "ERROR: SPRITE(~A) has to many colors~%" n)
-    (quit :unix-status 1))
+    (failure "ERROR: SPRITE(~A) has to many colors~%" n))
   (dotimes (j 8)
     (dotimes (i 8)
       (setf (aref sprite i j) (lookup-color (aref sprite i j) palette))))
@@ -210,15 +213,14 @@
   (and (> (length slice) i) (eq #\# (elt slice i))))
 
 (defun get-height (level i)
-  (dotimes (j (length level))
+  (dotimes (j (length level) (length level))
     (when (is-ground (elt level j) (1+ i))
       (return-from get-height j))))
 
 (defun safe-guard (x)
-  (cond ((or (< x 6) (> x 26))
-	 (format t "ERROR: level tiles out of screen~%")
-	 (quit :unix-status 1))
-	(t x)))
+  (if (or (< x 6) (> x 26))
+      (failure "ERROR: level tiles out of screen~%")
+      x))
 
 (defun generate-tiles (base height-map)
   (mapcar (lambda (x) (safe-guard (- 18 (* 2 (- base x))))) height-map))
@@ -233,7 +235,9 @@
 (defun generate-heights (level)
   (let ((base-offset 0))
     (loop while (not (eq #\= (elt (elt level base-offset) 0))) do
-      (incf base-offset))
+      (incf base-offset)
+      (when (>= base-offset (length level))
+	(failure "ERROR: first column must contain '=' to indicate entry~%")))
     (let ((height-map nil))
       (dotimes (i (1- (max-length level)))
 	(push (get-height level i) height-map))
@@ -243,10 +247,14 @@
   (append (list repeat (+ 2 (length map))) map))
 
 (defun read-level (filename)
+  (format t "PARSING: ~A~%" filename)
   (let ((level nil) (repeat nil))
     (with-open-file (in filename :direction :input)
-      (read in)
+      (unless (eq 'repeat (read in))
+	(failure "ERROR: level should start with 'REPEAT'~%"))
       (setf repeat (read in))
+      (unless (numberp repeat)
+	(failure "ERROR: REPEAT value should be numerical~%"))
       (loop for line = (read-line in nil :eof) until (eq line :eof) do
 	(push line level)))
     (level-output repeat (generate-heights (reverse level)))))
