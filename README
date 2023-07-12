@@ -1,0 +1,19 @@
+"Kur tu teci, Gailīti manu?"
+
+Is a Latvian folk song about a rooster and his daily duties.
+
+This song was made into video game as a courtesy to "Retro Istaba" community.
+It is intended to be run on NES/Famicom console, but to run it on a modern
+computer one would need an emulator like fceux or nestopia, it also could be
+ran in webish emulator https://koute.github.io/pinky-web/ without installing
+anying on your host computer.
+
+To build this game one would need to install make, cc65, imagemagick and sbcl.
+
+Controls of this game are fairly simple:
+
+"start" button - to start game and pause it during the game
+
+"A" button - to jump, and second time in the air to double jump
+
+"select" button - gives infinite lives, but also some extra hard levels
