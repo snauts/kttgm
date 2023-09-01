@@ -48,6 +48,7 @@ rooster_py:	.res 1
 image_ptr:	.res 1
 music_idx:	.res 1
 gold_mode:	.res 1
+to_title:	.res 1
 crashed:	.res 1
 delta_x:	.res 1
 delta_y:	.res 1
@@ -355,6 +356,8 @@ rst:
 	jsr	wait_vblank
 	jsr	update_ppu_ctrl
 
+	jsr	game_startup
+
 loop:
 	lda	counter
 spin:	cmp	counter
@@ -516,6 +519,8 @@ crash_epilogue:
 	ldx	lives
 	cpx	#$FF
 	bne	:+
+	lda	#$10
+	sta	sky_offset
 	lda     #GAME_OVER
 	sta     image_ptr
 	lda	#$F0
@@ -975,6 +980,8 @@ outro_check_input:
 	beq	:+
 	lda     #$00
 	sta	image_ptr
+	lda	#$10
+	sta	sky_offset
 	lda	#$F0
 	jmp	start_fade
 :
@@ -1501,9 +1508,32 @@ fade_done:
 	cmp	#$F1
 	beq	@l1
 @l0:
-	jmp	start_title
-@l1:
+	lda	#$01
+	sta	to_title
 	jmp	start_game
+@l1:
+	lda	#$00
+	sta	to_title
+	jmp	start_game
+
+game_startup:
+	lda	#1
+	sta	to_title
+	lda	#$10
+	sta	sky_offset
+	lda	#%10001100
+	sta	ppu_ctrl
+	jsr	start_game
+	rts
+
+start_next:
+	lda	to_title
+	bne	:+
+	jsr	start_rooster
+	rts
+:
+	jsr	start_title
+	rts
 
 fill_even_ground:
 	jsr	update_column
@@ -1517,7 +1547,7 @@ fill_even_ground:
 	lda	column_pos
 	cmp	#$20
 	bne	:+
-	jsr	start_rooster
+	jsr	start_next
 :
 	rts
 
@@ -1639,6 +1669,8 @@ play_sound:
 	lda	progress
 	beq	@pause_music
 	lda	pause
+	bne	@pause_music
+	lda	to_title
 	bne	@pause_music
 	lda	music_delay
 	bne	@exit
